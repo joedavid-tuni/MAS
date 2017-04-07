@@ -1,0 +1,192 @@
+
+<html>
+<head>
+<title>Make your Mobile Phone Order</title>
+
+<style>
+
+
+
+body {
+    background-image: url("https://s2.postimg.org/sbbwyyf55/Background2.jpg");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+.error{
+    color:red;
+    font-style: italic;
+    font-size: 15px;
+    visibility: hidden;
+    border-color:orange;
+
+}
+</style>
+
+    <script>
+
+        function validate_sub() {
+            var error = 0;
+            var errname = document.getElementById("errname");
+            var id = document.mobileorder.first_name;
+            if (id.value === "") {
+                errname.setAttribute("style", "visibility:visible");
+                id.style.borderColor = "red";
+                error = 1;
+
+            }
+            else {
+                errname.setAttribute("style", "visibility:hidden");
+            }
+
+            if (!error) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+		function validate_check() {
+			var error1 = 0;
+			var errcname = document.getElementById("errcname");
+			var id = document.check2.Customer_name;
+			if (id.value === "") {
+				errcname.setAttribute("style", "visibility:visible");
+				id.style.borderColor = "red";
+				error1 = 1;
+			}
+			else {
+				errcname.setAttribute("style", "visibility:hidden");
+			}
+			if (error1 == 0) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+
+        function validate_query() {
+            var error = 0;
+            var errquery = document.getElementById("errquery");
+            var id = document.query.sqlquery;
+            if (id.value === "") {
+                errquery.setAttribute("style", "visibility:visible");
+                id.style.borderColor = "red";
+                error = 1;
+            }
+            else {
+                errquery.setAttribute("style", "visibility:hidden");
+            }
+
+            if (!error) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<h1>Make your Mobile Phone Order</h1>
+
+<form id="mobileorder" name="mobileorder" action="http://127.0.0.1:4568/submit" method="POST">
+
+<img src="http://www.zeendo.com/info/wp-content/uploads/2012/07/NokiaN9_11.jpg" alt="Mobile" align="Right" style="width:304px;height:228px; ">
+
+<fieldset style="width:800px">
+	<legend><b>ORDER DETAILS</b></legend><br>
+	Full Name: <input type="text" name="first_name" id="first_name" placeholder="Enter your full name"/>
+    <span id="errname" class="error">This is required</span><br><br>
+
+	Address:  <input type="text" name="address" id="address" maxlength="49" placeholder="Enter your Address" style="width: 300px;"/>
+	Telephone No.: <input type="text" name="telephoneno" id="telephoneno" placeholder="Enter your telephone number"/>
+
+	<br></br>
+	Select your Frame: 
+	<select name="Frame">
+	<option value="Frame_1">Frame 1 </option>
+	<option value="Frame_2">Frame 2 </option>
+	<option value="Frame_3">Frame 3 </option>
+	</select>
+	<br></br>
+	Select Frame Colour 
+	<select name="Frame_colour">
+	<option value="Red"> Red </option>
+	<option value="Green"> Green </option>
+	<option value="Blue"> Blue </option>
+	</select>
+	<br></br>
+	Select Screen Type 
+	<select name="Screen_type">
+	<option value="AMOLED"> Screen 1 </option>
+	<option value="Capacitive"> Screen 2 </option>
+	<option value="Resistive"> Screen 3 </option>
+	</select>
+	
+	<br></br>
+	
+	Select Screen Colour: 
+	<select name="Screen_colour">
+	<option value="Red"> Red </option>
+	<option value="Green"> Green </option>
+	<option value="Blue"> Blue </option>
+	</select>
+	
+	<br></br>
+	
+	Select your Keyboard: 
+	<select name="Keyboard">
+	<option value="Standard"> Keyboard 1</option>
+	<option value="QWERTY"> Keyboard 2</option>
+	<option value="Touch"> Keyboard 3</option>
+	</select>
+	
+	<br></br>
+	
+	Select your Keyboard Colour: 
+	<select name="Keyboard_colour">
+	<option value="Red"> Red </option>
+	<option value="Green"> Green </option>
+	<option value="Blue"> Blue </option>
+	</select>
+	
+	<br></br>
+	
+	Order Quantity: <input type='number' min='1' size='10' id='numberinput' name='Order' value='1' />
+	
+	<br></br>
+	<input type="submit" name="__exclude__Submit" value="Submit"  onclick="return validate_sub();"/>
+</fieldset>
+
+</form>
+
+<fieldset >
+	<legend><b>CHECK THE DATABASE</b></legend><br>
+
+	<form action='http://127.0.0.1:4568/Check1' method = "GET">Products Made So Far: <input type="submit" name="button1" id="button1" value="Check" ;></form><br>
+
+	<form id='check2' name ='check2' action='./Check2' method = "POST">History for Customer:<input type="text" name="Customer_name" id="Customer_name" placeholder="Customer Name"/>
+    <input type="submit" id="button2" name="button2" value="Check" onclick="return validate_check();"/>
+	<span id="errcname" class="error">This is required</span><br><br></form>
+
+	<form action='./Check3' method = "GET">Products currently in production: <input type="submit" name="button3" id="button3" value="Check"><br><br></form>
+
+	<form action='./Check4' method = "GET">Customers with products in production: <input type="submit" name="button4" id="button4" value="Check"><br><br></form>
+
+	<form action='./Check5' method = "GET">Customers who have ordered last week: <input type="submit" name="button5" id="button5" value="Check"><br><br></form>
+
+	<form id='query' name='query' action='./Check6' method = "POST">
+	DIRECT SQL QUERY WITH DATABASE (follow MySQL Syntax):<br>
+	<input type="text" name="sqlquery" id="sqlquery" placeholder="SQL QUERY" style="width: 1400px;"/>
+	<input type="submit" name="button6" value="Query" onclick="return validate_query();"></form>
+	<span id="errquery" class="error">Query Cannot be Blank</span><br><br></form>
+</fieldset>
+
+</body>
+</html>
