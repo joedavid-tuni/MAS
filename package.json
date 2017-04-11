@@ -13,7 +13,9 @@
   "author": "Joe David",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.17.1",
     "express": "^4.15.2",
+    "fifo": "^2.3.0",
     "formidable": "^1.1.1",
     "heartbeats": "^5.0.1",
     "mysql": "^2.13.0",
