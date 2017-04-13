@@ -31,6 +31,7 @@ connection.connect(function (err) {
         connection.query('delete from customers');
         connection.query('delete from products');
         connection.query('delete from orders');
+        connection.query('delete from pallets');
         connection.query('ALTER TABLE Orders DROP OrderID', function(){
             connection.query('ALTER table Orders Add column OrderID Int(5) PRIMARY KEY AUTO_INCREMENT AFTER Sno', function(){
                 connection.query(' ALTER TABLE Orders AUTO_INCREMENT=5000;')
