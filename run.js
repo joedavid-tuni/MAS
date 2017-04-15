@@ -102,11 +102,11 @@ var pallAgent= function pallAgent(id,ProductID,frameType,frameColour,screenType,
     this.keyboard = false;
     this.screen = false;
     this.paper = false;
-    this.frameType =frameType ;
+    if (frameType == 'Frame_1') { this.frameType =1 ;} else if (frameType == 'Frame_2') { this.frameType =2 ;}  else if (frameType == 'Frame_3') { this.frameType =3 ;}
     this.frameColour = frameColour;
-    this.screenType = screenType;
+    if (screenType == 'Screen_1'){this.screenType = 4;} else  if (screenType == 'Screen_2'){this.screenType = 5;} else if (screenType == 'Screen_3'){this.screenType = 6;}
     this.screenColour = screenColour ;
-    this.keyboardType = keyboardType ;
+    if (keyboardType == 'Keyboard_1'){this.keyboardType = 7 ;} else if (keyboardType == 'Keyboard_2'){this.keyboardType = 8 ;} else if (keyboardType == 'Keyboard_3'){this.keyboardType = 9 ;}
     this.keyboardColour = keyboardColour;
     this.currentws = 7;
     this.currentzone = 3;
@@ -132,58 +132,129 @@ pallAgent.prototype.currentneed = function () {
   return this.currentneed_;
 };
 
-workstation.prototype.makeRequest= function(wsnumber, req){
-    var ref=this;
-    if (req == 'loadpaper'){
-        var options = {
+// workstation.prototype.makeRequest= function(wsnumber, req){
+//     var ref=this;
+//     if (req == 'loadpaper'){
+//         var options = {
+//             method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+//             body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+//             json: true,
+//             url: "	http://localhost:3000/RTU/SimROB"+wsnumber+"/services/LoadPaper",
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             }
+//         };
+//         //Print the result of the HTTP POST request
+//         request(options, function (err, res, body) {
+//             if (err) {
+//                 console.log('Error Loading Pallet');
+//             }
+//             else {
+//                 console.log(body);
+//             }
+//         });
+//
+//     }
+//
+// };
+
+workstation.prototype.work= function (index) {
+ref =this;
+    switch (this.wsnumber){
+
+        case 1:
+            var options = {
             method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
             body: {"destUrl": "http://127.0.0.1"}, // Javascript object
             json: true,
-            url: "	http://localhost:3000/RTU/SimROB"+wsnumber+"/services/LoadPaper",
+            url: "	http://localhost:3000/RTU/SimROB"+this.wsnumber+"/services/LoadPaper",
             headers: {
                 'Content-Type': 'application/json'
             }
         };
-        //Print the result of the HTTP POST request
-        request(options, function (err, res, body) {
-            if (err) {
-                console.log('Error Loading Pallet');
+            //Print the result of the HTTP POST request
+            request(options, function (err, res, body) {
+                if (err) {
+                    console.log('Error Loading Paper');
+                }
+                else {
+                    console.log(body);
+                    console.log('Debug 3~~~~~~~~~~~~~~~~~~~~~`');
+                    pallet[index].currentneed_ = pallet[index].frameColour;
+                }
+            });
+            break;
+
+        case 7:     //INSERT CODE FOR WORKSTATION 7
+
+            break;
+
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+            var url="";
+            if(!(pallet[index].frame)){
+              //  if(pallet[index].frameType==1){url="http://localhost:3000/RTU/SimROB2/services/Draw1"};
+
+                request.post("http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].frameType, function(req,res,err){
+                    if (err){
+                        console.log('Error drawing frame, Error:');
+                        console.log(err);
+                    }
+
+                    else{
+                        console.log('Requested to draw frame of type' + pallet[index].frameType + ' and of colour ' + pallet[index].frameColour )
+                    }
+                });
+        }
+            else if(!(pallet[index].screen)){
+                if (pallet[index].currentneed()==ref.capability){
+                    request.post("http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].screenType, function(req,res,err){
+                        if (err){
+                            console.log('Error drawing frame, Error:');
+                            console.log(err);
+                        }
+
+                        else{
+                            console.log('Requested to draw Screen of type' + pallet[index].screenType + ' and of colour ' + pallet[index].screenColour)
+                        }
+                    });
+                }
+                else{
+                    ref.transzone(3,5)
+                }
+
             }
-            else {
-                console.log(body);
+            else   if(!(pallet[index].keyboard)){
+                if (pallet[index].currentneed()==ref.capability){
+                    request.post("http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].keyboardType, function(req,res,err){
+                        if (err){
+                            console.log('Error drawing frame, Error:');
+                            console.log(err);
+                        }
+
+                        else{
+                            console.log('Requested to draw Keyboard of type' + pallet[index].keyboardType + ' and of colour ' + pallet[index].keyboardColour)
+                        }
+                    });
+                }
+                else{
+                    ref.transzone(3,5)
+                }
+
             }
-        });
+        break;
+
+
 
     }
-
-};
-
-workstation.prototype.work= function () {
- if(this.capability == 'paper'){
-     console.log('Debug 2~~~~~~~~~~~~~~~~~~~~~`');
-
-     var options = {
-         method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
-         body: {"destUrl": "http://127.0.0.1"}, // Javascript object
-         json: true,
-         url: "	http://localhost:3000/RTU/SimROB1/services/LoadPaper",
-         headers: {
-             'Content-Type': 'application/json'
-         }
-     };
-     //Print the result of the HTTP POST request
-     request(options, function (err, res, body) {
-         if (err) {
-             console.log('Error Loading Paper');
-         }
-         else {
-             console.log(body);
-             console.log('Debug 3~~~~~~~~~~~~~~~~~~~~~`');
-         }
-     });
-
- }
-
 };
 
 
@@ -213,55 +284,117 @@ workstation.prototype.runServer = function (port) {
 
                     case "Z1_Changed":
 
-                    var index=0;
-                        if((req.body.payload.PalletID!=-1)) { //If new pallet is introduced and not leaving (as we receive notifications for both)
 
-                            var  palletID = req.body.payload.PalletID;
+                            var index = 0;
+                            if ((req.body.payload.PalletID != -1)) { //If new pallet is introduced and not leaving (as we receive notifications for both)
 
-                            for (var i=0;i<pallet.length; i++) {
-                                if (pallet[i].palletID = palletID) {
-                                index = i;
-                            }
-                            console.log('Found at position', index)
-                            }
-                            console.log(pallet[index].currentneed());
-                            if (pallet[index].currentneed() == ref.capability ){
-                                console.log('Debug 3~~~~~~~~~~~~~~~~~~~~~`');
-                                ref.transzone(1,2);
-                            }
-                            else{
-                                ref.transzone(1,4);
-                            }
-                    }
-                        break;
+                                var palletID = req.body.payload.PalletID;
 
-                    case "Z2_Changed":
-                        //insert code to check if 3 is free
-                        ref.transzone(2,3);
+                                for (var i = 0; i < pallet.length; i++) {
+                                    if (pallet[i].palletID = palletID) {
+                                        index = i;
+                                        console.log('Found at position', index);
+                                        break;
+                                    }
 
-                        break;
-
-                    case "Z3_Changed":
-                        if((req.body.payload.PalletID!=-1)) {
-                            var index1;
-
-                            var palletID1 = req.body.payload.PalletID;
-
-                            for (var i = 0; i < pallet.length; i++) {
-                                if (pallet[i].palletID = palletID1) {
-                                    index1 = i;
+                                }
+                                console.log('Current need of Pallet is ', pallet[index].currentneed());
+                                if (pallet[index].currentneed_== ref.capability) {
+                                    console.log('Capability match');
+                                    setTimeout(function() {
+                                        ref.transzone(1, 2);
+                                    },1000);
+                                }
+                                else  {
+                                    console.log('Capability Mismatch');
+                                    setTimeout(function() {
+                                        ref.transzone(1, 4);
+                                    },1000);
                                 }
                             }
 
-                            ref.work();
-                            pallet[index1].currentneed_ = pallet[index1].frameColour;
-                        }
+                        break;
+
+                    case "Z2_Changed":
+                        setTimeout(function() {
+                        //insert code to check if 3 is free
+                        ref.transzone(2,3);
+                        },1000);
+                        break;
+
+                    case "Z3_Changed":
+
+                            //IF A PALLET ARRIVES AT ZONE 3 AND THAT HAPPENS NOT AT WORKSTATION 7 (TO PREVENT SIMILAR CONDITIONS WHILE LOADING PALLET)
+                            if ((req.body.payload.PalletID != -1) && (req.body.senderID != 'SimCNV7')) {
+                                var index1;
+
+                                var palletID1 = req.body.payload.PalletID;
+
+                                for (var i = 0; i < pallet.length; i++) {
+                                    if (pallet[i].palletID = palletID1) {
+                                        index1 = i;
+                                    }
+                                }
+                                setTimeout(function() {
+                                ref.work(index1);
+                                },1000);
+                            }
+
                         break;
 
                     case "Z4_Changed":
-                        ref.transzone(4,5);
+                        setTimeout(function() {
+                            ref.transzone(4, 5);
+                        },1000);
 
                         break;
+
+                    case "DrawEndExecution":
+
+
+                        console.log('Completed Drawing Recipe' + req.body.payload.Recipe + 'of colour' + req.body.payload.Color)
+                        var index1;
+
+                        var palletID1 = req.body.payload.PalletID;
+
+                        for (var i = 0; i < pallet.length; i++) {
+                            if (pallet[i].palletID = palletID1) {
+                                index1 = i;
+                                break;
+                            }
+                        }
+
+                            if ((req.body.payload.Recipe > 0) && (req.body.payload.Recipe < 4)) {
+
+                                pallet[index1].frame = true;
+                                pallet[index1].currentneed_ = pallet[index1].screenColour;
+                                console.log('Setting Frame true and Screen as current need');
+                                setTimeout(function() {
+                                    ref.work(index1);
+                                },1000);
+                            }
+
+                            else if ((req.body.payload.Recipe > 3) && (req.body.payload.Recipe < 7)) {
+                                pallet[index1].screen = true;
+                                pallet[index1].currentneed_ = pallet[index1].keyboardColour;
+                                console.log('Setting Screen true and Keyboard as current need');
+                                setTimeout(function() {
+                                    ref.work(index1);
+                                },1000);
+                            }
+
+                            else if ((req.body.payload.Recipe > 6) && (req.body.payload.Recipe < 10)) {
+                                pallet[index1].keyboard = true;
+                                pallet[index1].currentneed_ = 'Complete';
+                                console.log('Setting as complete');
+                                setTimeout(function() {
+                                    ref.transzone(3, 5);
+                                },1000);
+
+                            }
+
+                        break;
+
                 }
 
              //   break;
@@ -269,6 +402,7 @@ workstation.prototype.runServer = function (port) {
         if(req.body.id == 'PalletLoaded') {
             x=0;
             var  palletID = req.body.payload.PalletID;
+            console.log('Pallet Loaded and Pallet ID is ',palletID);
             connection.query("SELECT * FROM Pallets where Status = 'processed'", function(results,rows) {
 
                 pallet.push(new pallAgent(rows[0].OrderID, rows[0].ProductID, rows[0].Frametype, rows[0].Framecolour, rows[0].Screentype, rows[0].Screencolour, rows[0].Keyboardtype, rows[0].Keyboardcolour, palletID));
@@ -490,6 +624,7 @@ function subscriptions() {
     var flag=0;
     request.post('http://localhost:3000/RTU/SimROB7/events/PalletLoaded/notifs', {form: {destUrl: "http://localhost:6007/notifs/7"}}, function (err) {if (err) {flag=1;} else{ console.log('subscribed to pallet load');}});
     request.post('http://localhost:3000/RTU/SimROB1/events/PaperLoaded/notifs', {form: {destUrl: "http://localhost:6001/notifs/1"}}, function (err) {if (err) {flag=1;}});
+    request.post('	http://localhost:3000/RTU/SimROB*/events/DrawEndExecution/notifs', {form: {destUrl: "http://localhost:6001/notifs/1"}}, function (err) {if (err) {flag=1;}});
     for(var i=1; i<10; i++)
     { for(var j=1; j<6; j++){
         if((( i == 1)&&(j==4))||((i==7)&&(j==4))){
@@ -497,6 +632,7 @@ function subscriptions() {
         }
         else {
             request.post('	http://localhost:3000/RTU/SimCNV'+i+'/events/Z'+j+'_Changed/notifs', {form: {destUrl: "http://localhost:600"+i+"/notifs/"+i}}, function (err) {if (err) {flag=1;}});
+            request.post('	http://localhost:3000/RTU/SimROB'+i+'/events/DrawEndExecution/notifs', {form: {destUrl: "http://localhost:600"+i+"/notifs/"+i}}, function (err) {if (err) {flag=1;}});
         }
     }}
     for(var i=10; i<13; i++)
@@ -506,6 +642,7 @@ function subscriptions() {
         }
         else {
             request.post('	http://localhost:3000/RTU/SimCNV'+i+'/events/Z'+j+'_Changed/notifs', {form: {destUrl: "http://localhost:60"+i+"/notifs/"+i}}, function (err) {if (err) {flag=1;}});
+            request.post('	http://localhost:3000/RTU/SimROB'+i+'/events/DrawEndExecution/notifs', {form: {destUrl: "http://localhost:60"+i+"/notifs/"+i}}, function (err) {if (err) {flag=1;}});
         }
     }}
 
