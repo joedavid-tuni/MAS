@@ -10,6 +10,7 @@ var mysql = require('mysql');
 var formidable = require('formidable');
 var builder = require('xmlbuilder');
 var validator = require('xsd-schema-validator');
+var bodyParser = require('body-parser')
 
 var connection = mysql.createConnection({
     host: 'localhost',
@@ -22,6 +23,14 @@ var connection = mysql.createConnection({
 var CustomerID;
 var OrderID;
 var SNo ;
+
+
+
+
+app.use("/css", express.static(__dirname + '/css'));
+app.use("/script", express.static(__dirname + '/script'));
+app.use("/img", express.static(__dirname + '/img'));
+
 
 //Connecting to the DATABASE
 connection.connect(function (err) {
@@ -54,7 +63,7 @@ connection.connect(function (err) {
 
 
 app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/form.html'));
+    res.sendFile(path.join(__dirname + '/form1.html'));
 });
 
 app.post('/submit', function(req, res) {
@@ -64,102 +73,66 @@ app.post('/submit', function(req, res) {
         fieldvalues.push(value);    //storing the field values in an array
     })
         .on('end', function () { //in the event of end of the form data
-            var random =  Math.floor(Math.random()*90000) + 10000;
+
             console.log(fieldvalues);
-            var full_name = fieldvalues[0];
-            var address = fieldvalues[1];
-            var telephoneno = fieldvalues[2];
-            var frame = fieldvalues[3];
-            var frame_colour = fieldvalues[4];
-            var screen_type = fieldvalues[5];
-            var screen_colour = fieldvalues[6];
-            var keyboard = fieldvalues[7];
-            var keyboard_colour = fieldvalues[8];
-            var order = fieldvalues[9];
+            var rows = fieldvalues.length;
+            console.log(rows);
+            for(var i =0; i< rows; i+=10) {
+                var random =  Math.floor(Math.random()*90000) + 10000;
+                var full_name = fieldvalues[i];
+                var address = fieldvalues[i+1];
+                var telephoneno = fieldvalues[i+2];
+                var frame = fieldvalues[i+3];
+                var frame_colour = fieldvalues[i+4];
+                var screen_type = fieldvalues[i+5];
+                var screen_colour = fieldvalues[i+6];
+                var keyboard = fieldvalues[i+7];
+                var keyboard_colour = fieldvalues[i+8];
+                var order = fieldvalues[i+9];
 
 
-            //Inserting relevant information into Table Products
-            var sql = "INSERT INTO Products(SNo, ProductId, FrameType, FrameColour, ScreenType, ScreenColour, KeyboardType, KeyboardColour, Quantity) VALUES (?)";
-            var values = [SNo, random, frame, frame_colour, screen_type, screen_colour, keyboard, keyboard_colour, order];
-            connection.query(sql, [values], function (error) {
-                if (error) {
-                    console.log('Error while Performing Query');
-                    console.log(error);
-                    res.writeHead(404, {'Content-Type': 'text/html'});
-                    res.write("<html><head>");
-                    res.write("<style>");
-                    res.write("body {");
-                    res.write("    background-image: url('https://s2.postimg.org/sbbwyyf55/Background2.jpg');");
-                    res.write("    -webkit-background-size: cover;");
-                    res.write("    -moz-background-size: cover;");
-                    res.write("    -o-background-size: cover;");
-                    res.write("    background-size: cover;}");
-                    res.write("</style>");
-                    res.write("</head><body><h1>Error While Placing Order</h1>");
-                    res.write("<br><br>Please try again. To go back to the home screen Click <a href='/'>here</a></body></html>")
+                //Inserting relevant information into Table Products
+                var sql = "INSERT INTO Products(SNo, ProductId, FrameType, FrameColour, ScreenType, ScreenColour, KeyboardType, KeyboardColour, Quantity) VALUES (?)";
+                var values = [SNo, random, frame, frame_colour, screen_type, screen_colour, keyboard, keyboard_colour, order];
+                connection.query(sql, [values], function (error) {
+                    if (error) {
+
+                        console.log('Error while writing into products table');
+                        console.log(error);
+                        res.end();
+                    }
+                });
+                //INSERTING INTO  CUSTOMERS
+                var sql1 = "INSERT INTO Customers(SNo, Name, Address, TelephoneNo) VALUES (?)";
+                var values1 = [SNo, full_name, address, telephoneno];
+                connection.query(sql1, [values1], function (error, results, fields) {
+                    if (error) {
+                        console.log('Error while writing into customers table');
+                        console.log(error);
+
+                        res.end();
+                    }
+                });
+
+                //INSERTING INTO ORDERS
+                var sql2 = "INSERT INTO Orders(Sno, CustomerId, ProductID, Quantity) SELECT "+ SNo +", Customers.CustomerID, Products.ProductID, Products.Quantity FROM Customers, Products WHERE Customers.Sno="+ SNo +" AND Products.Sno="+ SNo +";";
+
+                connection.query(sql2, function (error, results, fields) {
+                    if (error) {
+                        console.log('Error while writing into orders table');
+                        console.log(error);
+                        res.end();
+                    }
+                });
+                ++SNo;
+
                     res.end();
-                }
-            });
-            //INSERTING INTO  CUSTOMERS
-            var sql1 = "INSERT INTO Customers(SNo, Name, Address, TelephoneNo) VALUES (?)";
-            var values1 = [SNo, full_name, address, telephoneno];
-            connection.query(sql1, [values1], function (error, results, fields) {
-                if (error) {
-                    console.log('Error while Performing Query');
-                    console.log(error);
-                    res.writeHead(404, {'Content-Type': 'text/html'});
-                    res.write("<html><head>");
-                    res.write("<style>");
-                    res.write("body {");
-                    res.write("    background-image: url('https://s2.postimg.org/sbbwyyf55/Background2.jpg');");
-                    res.write("    -webkit-background-size: cover;");
-                    res.write("    -moz-background-size: cover;");
-                    res.write("    -o-background-size: cover;");
-                    res.write("    background-size: cover;}");
-                    res.write("</style>");
-                    res.write("</head><body><h1>Error While Placing Order</h1>");
-                    res.write("<br><br>Please try again. To go back to the home screen Click <a href='/'>here</a></body></html>")
-                    res.end();
-                }
-            });
 
-            //INSERTING INTO PRODUCTS
-            var sql2 = "INSERT INTO Orders(Sno, CustomerId, ProductID, Quantity) SELECT "+ SNo +", Customers.CustomerID, Products.ProductID, Products.Quantity FROM Customers, Products WHERE Customers.Sno="+ SNo +" AND Products.Sno="+ SNo +";";
 
-            connection.query(sql2, function (error, results, fields) {
-                if (error) {
-                    console.log('Error while Performing Query');
-                    console.log(error);
-                    res.writeHead(404, {'Content-Type': 'text/html'});
-                    res.write("<html><head>");
-                    res.write("<style>");
-                    res.write("body {");
-                    res.write("    background-image: url('https://s2.postimg.org/sbbwyyf55/Background2.jpg');");
-                    res.write("    -webkit-background-size: cover;");
-                    res.write("    -moz-background-size: cover;");
-                    res.write("    -o-background-size: cover;");
-                    res.write("    background-size: cover;}");
-                    res.write("</style>");
-                    res.write("</head><body><h1>Error While Placing Order</h1>");
-                    res.write("<br><br>Please try again. To go back to the home screen Click <a href='/'>here</a></body></html>")
-                    res.end();
-                }
-            });
-            res.writeHead(200, {'Content-Type': 'text/html'});  //write the response header
-            res.write("<html><head>");
-            res.write("<style>");
-            res.write("body {");
-            res.write("    background-image: url('https://s2.postimg.org/sbbwyyf55/Background2.jpg');");
-            res.write("    -webkit-background-size: cover;");
-            res.write("    -moz-background-size: cover;");
-            res.write("    -o-background-size: cover;");
-            res.write("    background-size: cover;}");
-            res.write("</style>");
-            res.write("</head><body><h1>Thank you for your Order</h1>");
-            res.write("<br><br>Order is placed. To go back to the home screen Click <a href='/'>here</a></body></html>");//link to go back to the home page
-            setTimeout(function(){//giving a time of two seconds to end the response to prevent end before write scenario
-                res.end();
-                ++SNo
+
+            }
+            setTimeout(function(){
+
                 request({
                     url: 'http://127.0.0.1:6001/Submit',
                     method: "GET"
@@ -167,7 +140,6 @@ app.post('/submit', function(req, res) {
                     console.log('Requested :)');
                 })
             }, 2000);
-
         });
 });
 

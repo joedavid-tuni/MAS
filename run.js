@@ -11,7 +11,7 @@ var bodyParser = require('body-parser');
 var request = require('request');
 var Countdown = require('timepiece').Countdown;
 var countdown = new Countdown();
-
+const wait = 5000;
 var pallet = [];
 
 countdown.set(10);
@@ -499,6 +499,20 @@ workstation.prototype.runServer = function (port) {
 
                             }
 
+                        if (req.body.payload.PalletID == -1) {
+                            request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res, body) {
+                                var obj = JSON.parse(res.body);
+                                var present = obj.v;
+                                if (present) {
+                                    setTimeout(function() {
+                                    ref1.transzone(2, 3)
+                                    },1500);
+                                }
+
+                            });
+
+                        }
+
                         // res.writeHead(202);
                         res.end();
 
@@ -572,7 +586,7 @@ workstation.prototype.runServer = function (port) {
                                 // },1000);
                             }
 
-                            else if ((req.body.payload.Recipe > 3) && (req.body.payload.Recipe < 7)) {
+                            if ((req.body.payload.Recipe > 3) && (req.body.payload.Recipe < 7)) {
                                 pallet[index6].screen = true;
                                 pallet[index6].currentneed_ = pallet[index6].keyboardColour;
                                 console.log('Setting Screen true and Keyboard as current need');
@@ -581,7 +595,7 @@ workstation.prototype.runServer = function (port) {
                                 // },1000);
                             }
 
-                            else if ((req.body.payload.Recipe > 6) && (req.body.payload.Recipe < 10)) {
+                            if ((req.body.payload.Recipe > 6) && (req.body.payload.Recipe < 10)) {
                                 pallet[index6].keyboard = true;
                                 pallet[index6].currentneed_ = 'Complete';
                                 console.log('Setting as complete');
@@ -603,78 +617,101 @@ workstation.prototype.runServer = function (port) {
                         res.end();
 
                         break;
+                    // case "PaperLoaded":
+                    //     request.get("http://localhost:3000/RTU/SimCNV2/data/P1", function (req, res, body) {
+                    //         var obj = JSON.parse(res.body);
+                    //         var present = obj.v;
+                    //         if (!present) {
+                    //             setTimeout(function() {
+                    //                 ref1.transzone(3, 5);
+                    //             },1000);
+                    //         }
+                    //
+                    //         else {
+                    //
+                    //             //write code to invoke the above after 10 seconds
+                    //         }
+                    //     });
+                    //
+                    //     res.end();
+                    //     break;
+                    case "PalletLoaded":
+                        countdown.reset();
+                        countdown.start();
+                        x=0;
+                        var  palletID = req.body.payload.PalletID;
+                        console.log('Pallet Loaded and Pallet ID is ',palletID);
+                        connection.query("SELECT * FROM Pallets where Status = 'processed'", function(results,rows) {
 
+                            pallet.push(new pallAgent(rows[0].OrderID, rows[0].ProductID, rows[0].Frametype, rows[0].Framecolour, rows[0].Screentype, rows[0].Screencolour, rows[0].Keyboardtype, rows[0].Keyboardcolour, palletID));
+                            setTimeout(function() {
+                                connection.query("UPDATE pallets SET PalletID = ? WHERE Status = 'processed'", palletID, function (err) {
+                                    if(!err){ console.log(' GOING TO LOAD~~~~~~~~~~~~');} else { console.log(err);}
+                                    connection.query("UPDATE pallets SET Status= 'loaded' WHERE PalletID = ?",palletID);
+                                });
+                            },1000);
+                            console.log('Pallet of size' + pallet.length + ' Contents:');
+                            for(var i=0; i<pallet.length;i++) {
+                                console.log(pallet[i]);
+                            }
+                        });
+
+                        setTimeout(function(){
+                            x++;
+                            console.log(req.body);
+                            var options = {
+                                method: 'POST',
+                                body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                                json: true,
+                                url: "http://localhost:3000/RTU/SimCNV7/services/TransZone35",
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            };
+
+                            //Print the result of the HTTP POST request
+                            request(options, function (err, res, body) {
+                                if (err) {
+                                    console.log('Error Accomplishing Initial Transfer');
+                                }
+                                else {
+                                    console.log('Initial Transfer Completed');
+                                }
+                            });
+                        }, 2000);
+                        // res.writeHead(202);
+                        res.end();
                 }
 
              //   break;
       //  }
-        if(req.body.id == 'PalletLoaded') {
-            countdown.reset();
-            countdown.start();
-            x=0;
-            var  palletID = req.body.payload.PalletID;
-            console.log('Pallet Loaded and Pallet ID is ',palletID);
-            connection.query("SELECT * FROM Pallets where Status = 'processed'", function(results,rows) {
 
-                pallet.push(new pallAgent(rows[0].OrderID, rows[0].ProductID, rows[0].Frametype, rows[0].Framecolour, rows[0].Screentype, rows[0].Screencolour, rows[0].Keyboardtype, rows[0].Keyboardcolour, palletID));
-                setTimeout(function() {
-                    connection.query("UPDATE pallets SET PalletID = ? WHERE Status = 'processed'", palletID, function (err) {
-                        if(!err){ console.log(' GOING TO LOAD~~~~~~~~~~~~');} else { console.log(err);}
-                        connection.query("UPDATE pallets SET Status= 'loaded' WHERE PalletID = ?",palletID);
-                    });
-                },1000);
-                    console.log('Pallet of size' + pallet.length + ' Contents:');
-                    for(var i=0; i<pallet.length;i++) {
-                        console.log(pallet[i]);
-                    }
-            });
-
-            setTimeout(function(){
-                x++;
-            console.log(req.body);
-            var options = {
-                method: 'POST',
-                body: {"destUrl": "http://127.0.0.1"}, // Javascript object
-                json: true,
-                url: "http://localhost:3000/RTU/SimCNV7/services/TransZone35",
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            };
-
-            //Print the result of the HTTP POST request
-            request(options, function (err, res, body) {
-                if (err) {
-                    console.log('Error Accomplishing Initial Transfer');
-                }
-                else {
-                    console.log('Initial Transfer Completed');
-                }
-            });
-            }, 2000);
-            // res.writeHead(202);
-            res.end();
-        }
         //IF NEW PALLET IS INTRODUCED IN ALL WORKSTATIONS
-        if(req.body.id == 'PaperLoaded') {
-            request.get("http://localhost:3000/RTU/SimCNV2/data/P1", function (req, res, body) {
-                var obj = JSON.parse(res.body);
-                var present = obj.v;
-                if (!present) {
-                    setTimeout(function() {
-                        ref1.transzone(3, 5);
-                    },1000);
-                }
 
-                else {
+    });
 
-                    //write code to invoke the above after 10 seconds
-                }
-            });
+    app.post('/notifs/paperloaded', function(req,res){
+        console.log(req.body);
+        request.get("http://localhost:3000/RTU/SimCNV2/data/P1", function (req, res, body) {
+            var obj = JSON.parse(res.body);
+            var present = obj.v;
+            console.log('PRESENT VALUE IS~~~~~~~~~', present);
+            if (!present) {
+                setTimeout(function() {
+                    ref1.transzone(3, 5);
+                },1000);
+            }
 
-            res.end();
+            if (present){
+                setTimeout(function() {
+                    ref1.transzone(3, 5);
+                },wait);
+            }
+        });
 
-        }
+
+
+
     });
     app.listen(port, hostname, function(){
         console.log(` Server running at http://${hostname}:${port}/`);
@@ -791,10 +828,10 @@ countdown.reset();
             //CREATING PALLETS TABLE FROM ORDERS AND PRODUCTS TABLES WHICH INTURN IS FROM THE WEB INTERFACE
 
             for (rows_ = 0; rows_ < rows.length; rows_++) {   //if using dynamic form revert to rows.length instead if ++counter
-                for (var qty = 0; qty < rows[0].Quantity; qty++) {
+                for (var qty = 0; qty < rows[rows_].Quantity; qty++) {
                     var random =  Math.floor(Math.random()*90000) + 10000;
                    var sql = "INSERT INTO Pallets(OrderID, ProductID, Frametype, Framecolour, Screentype, Screencolour, Keyboardtype, Keyboardcolour) VALUES (?)";
-                    var values1 = [rows[0].OrderID,random, rows[0].FrameType, rows[0].FrameColour, rows[0].ScreenType,rows[0].ScreenColour,rows[0].KeyboardType,rows[0].KeyboardColour];
+                    var values1 = [rows[rows_].OrderID,random, rows[rows_].FrameType, rows[rows_].FrameColour, rows[rows_].ScreenType,rows[rows_].ScreenColour,rows[rows_].KeyboardType,rows[rows_].KeyboardColour];
                     connection.query(sql, [values1], function (error, results, fields) {
                         if(!error) {
                             console.log('Inserted Successfully into Pallets Table');
@@ -805,6 +842,7 @@ countdown.reset();
 
                     })
                 }
+
             }
         for (rows_ = 0; rows_ < rows.length; rows_++) {
             connection.query("UPDATE Products SET Status = 'processed' WHERE ProductID = ?", rows[0].ProductID, function(){
@@ -875,7 +913,7 @@ workstation.prototype.transzone = function (zone1,zone2) {
 function subscriptions() {
     var flag=0;
     request.post('http://localhost:3000/RTU/SimROB7/events/PalletLoaded/notifs', {form: {destUrl: "http://localhost:6007/notifs/7"}}, function (err) {if (err) {flag=1;} else{ console.log('subscribed to pallet load');}});
-    request.post('http://localhost:3000/RTU/SimROB1/events/PaperLoaded/notifs', {form: {destUrl: "http://localhost:6001/notifs/1"}}, function (err) {if (err) {flag=1;}});
+    request.post('http://localhost:3000/RTU/SimROB1/events/PaperLoaded/notifs', {form: {destUrl: "http://localhost:6001/notifs/paperloaded"}}, function (err) {if (err) {flag=1;}});
 
 }
 
@@ -906,6 +944,6 @@ ws12.loadpen();
 
 //EXPRESS LISTENING CODE TO RUN 'THIS' SERVER
 app.listen(5001, function(){
-    console.log('Server Running on Port 5000');
+    console.log('Server Running on Port 5001');
     subscriptions();
 });
