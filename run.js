@@ -1,22 +1,20 @@
 /**
  * Created by Joe David on 09-04-2017.
  */
-var validator = require('xsd-schema-validator');
+
 var mysql = require('mysql');
 var heartbeats = require('heartbeats');
 var express = require('express');
 var app = express();
 var http = require('http');
-var fifo =require('fifo')();
-var on_line = require('fifo')();
 var bodyParser = require('body-parser');
 var request = require('request');
-var heartbeats = require('heartbeats');
-var heart = heartbeats.createHeart(10000);
+var Countdown = require('timepiece').Countdown;
+var countdown = new Countdown();
 
-fifo.clear();
 var pallet = [];
-var counter = 0;
+
+countdown.set(10);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -39,11 +37,11 @@ connection.connect(function (err) {
 });
 
 
-heart.createEvent(1, function(){
+countdown.on('finish', function check_queue() {
     connection.query("SELECT * FROM Pallets where Status = 'in_queue'", function(results,rows){
 
         if (rows.length ==0 ){
-            console.log('No Pallets Ordered to Produce')
+            console.log('No Pallets Ordered to Produce');
         }
         else{
             setTimeout(function(){
@@ -86,6 +84,7 @@ var workstation= function (wsnumber, capability) {
     this.zone3=false;
     this.zone4=false;
     this.zone5=false;
+    this.shared =false;
     this.port  = 1234;
     this.url = "127.0.0.1";
     // if(!((wsnumber == 1)||(wsnumber == 7))) {
@@ -158,8 +157,9 @@ pallAgent.prototype.currentneed = function () {
 //
 // };
 
+
 workstation.prototype.work= function (index) {
-ref =this;
+var ref =this;
     switch (this.wsnumber){
 
         case 1:
@@ -203,50 +203,100 @@ ref =this;
             if(!(pallet[index].frame)){
               //  if(pallet[index].frameType==1){url="http://localhost:3000/RTU/SimROB2/services/Draw1"};
 
-                request.post("http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].frameType, function(req,res,err){
-                    if (err){
-                        console.log('Error drawing frame, Error:');
-                        console.log(err);
+                var options = {
+                    method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+                    body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                    json: true,
+                    url: "	http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].frameType,
+                    headers: {
+                        'Content-Type': 'application/json'
                     }
-
-                    else{
-                        console.log('Requested to draw frame of type' + pallet[index].frameType + ' and of colour ' + pallet[index].frameColour )
-                    }
+                };
+                //Print the result of the HTTP POST request
+                request(options, function (err, res, body) {
+                    // if (err){
+                    //     console.log('Error drawing frame, Error:');
+                    //     console.log(err);
+                    // }
+                    // else{
+                        console.log('Requested to draw frame of type' + pallet[index].frameType + ' and of colour ' + pallet[index].frameColour );
+                    // }
                 });
         }
             else if(!(pallet[index].screen)){
-                if (pallet[index].currentneed()==ref.capability){
-                    request.post("http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].screenType, function(req,res,err){
-                        if (err){
-                            console.log('Error drawing frame, Error:');
-                            console.log(err);
+                if (pallet[index].currentneed()==ref.capability){       //http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].screenType, function(req,res,err)
+                    var options = {
+                        method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+                        body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                        json: true,
+                        url: "	http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].screenType,
+                        headers: {
+                            'Content-Type': 'application/json'
                         }
-
-                        else{
-                            console.log('Requested to draw Screen of type' + pallet[index].screenType + ' and of colour ' + pallet[index].screenColour)
-                        }
+                    };
+                    //Print the result of the HTTP POST request
+                    request(options, function (err, res, body) {
+                        // if (err){
+                        //     console.log('Error drawing frame, Error:');
+                        //     console.log(err);
+                        // }
+                        // else{
+                        console.log('Requested to draw Screen of type' + pallet[index].screenType + ' and of colour ' + pallet[index].screenColour );
+                        // }
                     });
                 }
                 else{
-                    ref.transzone(3,5)
+
+                    request.get("http://localhost:3000/RTU/SimCNV"+ref.wsnumber+"/data/P5", function (req, res, body) {
+                        var obj = JSON.parse(res.body);
+                        var present = obj.v;
+                        if (!(present) ) {
+                            ref.shared = true;
+                            ref.transzone(3, 5);
+                        }
+                        else {
+
+                            //write code to repeat the above after 10 seconds;
+                        }
+                    });
                 }
 
             }
-            else   if(!(pallet[index].keyboard)){
-                if (pallet[index].currentneed()==ref.capability){
-                    request.post("http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].keyboardType, function(req,res,err){
-                        if (err){
-                            console.log('Error drawing frame, Error:');
-                            console.log(err);
+            else if(!(pallet[index].keyboard)){
+                if (pallet[index].currentneed()==ref.capability){ //http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].keyboardType
+                    var options = {
+                        method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+                        body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                        json: true,
+                        url: "	http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].keyboardType,
+                        headers: {
+                            'Content-Type': 'application/json'
                         }
-
-                        else{
-                            console.log('Requested to draw Keyboard of type' + pallet[index].keyboardType + ' and of colour ' + pallet[index].keyboardColour)
-                        }
+                    };
+                    //Print the result of the HTTP POST request
+                    request(options, function (err, res, body) {
+                        // if (err){
+                        //     console.log('Error drawing frame, Error:');
+                        //     console.log(err);
+                        // }
+                        // else{
+                        console.log('Requested to draw Keyboard of type' + pallet[index].keyboardType + ' and of colour ' + pallet[index].keyboardColour );
+                        // }
                     });
                 }
                 else{
-                    ref.transzone(3,5)
+                    request.get("http://localhost:3000/RTU/SimCNV"+ref.wsnumber+"/data/P5", function (req, res, body) {
+                        var obj = JSON.parse(res.body);
+                        var present = obj.v;
+                        if (!(present)) {
+                            ref.shared = true;
+                            ref.transzone(3, 5);
+                        }
+                        else {
+
+                            //write code to repeat the above after 10 seconds;
+                        }
+                    });
                 }
 
             }
@@ -261,21 +311,23 @@ ref =this;
 //METHOD RUNSERVER OF CLASS WORKSTATION
 workstation.prototype.runServer = function (port) {
     this.port = port;
-    var ref = this;
+    var ref1 = this;
     var hostname = this.url;
+
 
 
     app.get('/', function(req,res){
         res.statusCode = 200;
         res.setHeader('Content-Type', 'text/plain');
-        res.write('\nI am workstation ' + ref.wsnumber);
-        res.write('\nMy capability is: ' + ref.capability);
-        res.end('\nWorkstation ' + ref.wsnumber + ' is running.');
+        res.write('\nI am workstation ' + ref1.wsnumber);
+        res.write('\nMy capability is: ' + ref1.capability);
+        res.end('\nWorkstation ' + ref1.wsnumber + ' is running.');
     });
 
-    app.post('/notifs/'+ref.wsnumber, function(req,res){
-        var ref1 = this;
-        console.log(req.body);
+    app.post('/notifs/'+ref1.wsnumber, function(req,res){
+
+       // var ref = this;
+       console.log(req.body);
        // switch (req.body.SenderID) {
 
           //  case 'SimCNV8' || 'SimCNV9' || 'SimCNV10' || 'SimCNV11' || 'SimCNV12' || 'SimCNV2' || 'SimCNV3' || 'SimCNV4' || 'SimCNV5' || 'SimCNV6':
@@ -284,114 +336,271 @@ workstation.prototype.runServer = function (port) {
 
                     case "Z1_Changed":
 
+                      if ((req.body.payload.PalletID != -1)) { //If new pallet is introduced and not leaving (as we receive notifications for both)
+                          console.log('~~~~~~~~~~~~~PALLET INSERTED INTO WORKSTATION: ' + ref1.wsnumber + '~~~~~~~~~~~~~~');
+                          console.log(pallet);
+                          console.log('\n\n');
+                          var index1 = 0;
+                          //IF A PALLET IS INTRODUCED AT ZONE 1
+                          // if ((req.body.payload.PalletID != -1)) { //If new pallet is introduced and not leaving (as we receive notifications for both)
 
-                            var index = 0;
-                            if ((req.body.payload.PalletID != -1)) { //If new pallet is introduced and not leaving (as we receive notifications for both)
+                          var palletID = req.body.payload.PalletID;
 
-                                var palletID = req.body.payload.PalletID;
+                          for (var i = 0; i < pallet.length; i++) {
+                              if (pallet[i].palletID == palletID) {
+                                  index1 = i;
+                                  console.log('Found at position', index1);
+                                  break;
+                              }
 
-                                for (var i = 0; i < pallet.length; i++) {
-                                    if (pallet[i].palletID = palletID) {
-                                        index = i;
-                                        console.log('Found at position', index);
-                                        break;
-                                    }
+                          }
 
-                                }
-                                console.log('Current need of Pallet is ', pallet[index].currentneed());
-                                if (pallet[index].currentneed_== ref.capability) {
-                                    console.log('Capability match');
-                                    setTimeout(function() {
-                                        ref.transzone(1, 2);
-                                    },1000);
-                                }
-                                else  {
-                                    console.log('Capability Mismatch');
-                                    setTimeout(function() {
-                                        ref.transzone(1, 4);
-                                    },1000);
-                                }
-                            }
+                          switch (req.body.senderID) {
 
+                              case "SimCNV1":
+
+                                  console.log('Current need of Pallet is ', pallet[index1].currentneed());
+                                  console.log(pallet);
+                                  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res, body) {
+                                      var obj = JSON.parse(res.body);
+                                      var present = obj.v;
+                                      if (!present) {
+                                          setTimeout(function () {
+                                              ref1.transzone(1, 2);
+                                          }, 1000);
+                                      }
+                                      else {
+                                          //write code to wait for 10 seconds and then push from Z1->Z2 (ABOVE CODE)
+                                      }
+                                  });
+
+                                  res.end();
+                                  break;
+
+                              case "SimCNV7":
+                                  //HANDEL WORKSTATION 7 ZONE 1 HERE LATER . .
+                                  break;
+
+                              case "SimCNV2":
+                              case "SimCNV3":
+                              case "SimCNV4":
+                              case "SimCNV5":
+                              case "SimCNV6":
+                              case "SimCNV8":
+                              case "SimCNV9":
+                              case "SimCNV10":
+                              case "SimCNV11":
+                              case "SimCNV12":
+
+
+                                  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res, body) {
+                                      var obj = JSON.parse(res.body);
+                                      var present = obj.v;
+                                      console.log('Current Status of zone 2 of workstation ' + ref1.wsnumber);
+                                      console.log(present);
+                                      if((!(present))&&((ref1.capability == pallet[index1].currentneed()))){
+                                          setTimeout(function () {
+                                              ref1.transzone(1, 2);
+                                          }, 1000);
+                                      }
+                                      else {
+                                          setTimeout(function () {
+                                              ref1.transzone(1, 4);
+                                          }, 1000);
+                                      }
+                                  });
+
+                                  break;
+                          }
+                      }
                         break;
 
                     case "Z2_Changed":
-                        setTimeout(function() {
-                        //insert code to check if 3 is free
-                        ref.transzone(2,3);
-                        },1000);
+
+                        if ((req.body.payload.PalletID != -1)) {
+
+                            switch (req.body.senderID) {
+
+                                case"SimCNV7":
+                                        //INSERT CODE TO HANDLE WORKSTATION 7 HERE
+                                    break;
+
+                                case "SimCNV1":
+                                case "SimCNV2":
+                                case "SimCNV3":
+                                case "SimCNV4":
+                                case "SimCNV5":
+                                case "SimCNV6":
+                                case "SimCNV8":
+                                case "SimCNV9":
+                                case "SimCNV10":
+                                case "SimCNV11":
+                                case "SimCNV12":
+
+
+                                    request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P3", function (req, res, body) {
+                                        var obj = JSON.parse(res.body);
+                                        var present = obj.v;
+                                        if (!present) {
+                                            setTimeout(function () {
+                                                //insert code to check if 3 is free
+                                                ref1.transzone(2, 3);
+                                            }, 1000);
+                                        }
+                                        else {
+
+                                            //  write code to wait for 10 seconds and then push from Z2->Z3 (ABOVE CODE)
+                                        }
+                                    });
+                                    break;
+                            }
+                            res.end();
+
+                        }
                         break;
+
 
                     case "Z3_Changed":
 
                             //IF A PALLET ARRIVES AT ZONE 3 AND THAT HAPPENS NOT AT WORKSTATION 7 (TO PREVENT SIMILAR CONDITIONS WHILE LOADING PALLET)
-                            if ((req.body.payload.PalletID != -1) && (req.body.senderID != 'SimCNV7')) {
-                                var index1;
+                            if (req.body.payload.PalletID != -1) {
+                                var index3;
 
-                                var palletID1 = req.body.payload.PalletID;
-
+                                var palletID2 = req.body.payload.PalletID;
                                 for (var i = 0; i < pallet.length; i++) {
-                                    if (pallet[i].palletID = palletID1) {
-                                        index1 = i;
+                                    if (pallet[i].palletID == palletID2) {
+                                        index3 = i;
                                     }
                                 }
-                                setTimeout(function() {
-                                ref.work(index1);
-                                },1000);
+
+                                switch (req.body.senderID) {
+
+                                    case"SimCNV7":
+                                        //INSERT CODE TO HANDLE WORKSTATION 7 HERE
+                                        break;
+
+                                    case "SimCNV1":
+                                    case "SimCNV2":
+                                    case "SimCNV3":
+                                    case "SimCNV4":
+                                    case "SimCNV5":
+                                    case "SimCNV6":
+                                    case "SimCNV8":
+                                    case "SimCNV9":
+                                    case "SimCNV10":
+                                    case "SimCNV11":
+                                    case "SimCNV12":
+                                        setTimeout(function() {
+                                            ref1.work(index3);
+                                        },1000);
+
+                                        break;
+                                }
+
                             }
+
+                        // res.writeHead(202);
+                        res.end();
 
                         break;
 
                     case "Z4_Changed":
-                        setTimeout(function() {
-                            ref.transzone(4, 5);
-                        },1000);
+
+                        if ((req.body.payload.PalletID != -1)) {
+
+                         //   if(ref1.zone5 == false) { //CHECK ALSO IF THERE ISNT ANYTHING AT ZONE 5 NOT ONLY SHARED    !!!!!!!!!!!!!!!!!!!!!!!
+
+                                setTimeout(function () {
+                                    ref1.shared = true;
+                                    ref1.transzone(4, 5);
+
+                                }, 1000);
+                            // }
+                           //  else {
+                           //      //  write code to wait for 5 seconds and then push from Z4->Z5 (ABOVE CODE)
+                           //  }
+
+                        }
+
+                        res.end();
+                        break;
+
+                    case "Z5_Changed":
+
+                        if ((req.body.payload.PalletID != -1)) {
+
+                           ref1.zone5 = true;
+                        }
+                        else if (req.body.PalletID == -1){
+                            ref1.zone5 = false;
+
+                        }
+
+                        res.end();
 
                         break;
 
                     case "DrawEndExecution":
 
+                                console.log('\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+                                console.log(pallet);
+                                // console.log('Completed Recipe ID:  ');
+                               // console.log(req.body.payload.Recipe)
+                                console.log('\n\n');
 
-                        console.log('Completed Drawing Recipe' + req.body.payload.Recipe + 'of colour' + req.body.payload.Color)
-                        var index1;
+
+
+                        console.log('Completed Drawing Recipe' + req.body.payload.Recipe + 'of colour' + req.body.payload.Color);
+                        var index6;
 
                         var palletID1 = req.body.payload.PalletID;
 
                         for (var i = 0; i < pallet.length; i++) {
-                            if (pallet[i].palletID = palletID1) {
-                                index1 = i;
+                            if (pallet[i].palletID == palletID1) {
+                                index6 = i;
                                 break;
                             }
                         }
 
                             if ((req.body.payload.Recipe > 0) && (req.body.payload.Recipe < 4)) {
 
-                                pallet[index1].frame = true;
-                                pallet[index1].currentneed_ = pallet[index1].screenColour;
+                                pallet[index6].frame = true;
+                                pallet[index6].currentneed_ = pallet[index6].screenColour;
                                 console.log('Setting Frame true and Screen as current need');
-                                setTimeout(function() {
-                                    ref.work(index1);
-                                },1000);
+                                // setTimeout(function() {
+                                    ref1.work(index6);
+                                // },1000);
                             }
 
                             else if ((req.body.payload.Recipe > 3) && (req.body.payload.Recipe < 7)) {
-                                pallet[index1].screen = true;
-                                pallet[index1].currentneed_ = pallet[index1].keyboardColour;
+                                pallet[index6].screen = true;
+                                pallet[index6].currentneed_ = pallet[index6].keyboardColour;
                                 console.log('Setting Screen true and Keyboard as current need');
-                                setTimeout(function() {
-                                    ref.work(index1);
-                                },1000);
+                                // setTimeout(function() {
+                                    ref1.work(index6);
+                                // },1000);
                             }
 
                             else if ((req.body.payload.Recipe > 6) && (req.body.payload.Recipe < 10)) {
-                                pallet[index1].keyboard = true;
-                                pallet[index1].currentneed_ = 'Complete';
+                                pallet[index6].keyboard = true;
+                                pallet[index6].currentneed_ = 'Complete';
                                 console.log('Setting as complete');
-                                setTimeout(function() {
-                                    ref.transzone(3, 5);
-                                },1000);
+                                // setTimeout(function() {
+                                request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P5", function (req, res, body) {
+                                    var obj = JSON.parse(res.body);
+                                    var present = obj.v;
+                                    if (!(present)) {
+                                        ref1.transzone(3, 5);
+                                    }
+                                    else {
 
+                                        //write code to invoke the above operation after 10 seconds;
+                                    }
+                                });
+                                // },1000);
                             }
+                        // res.writeHead(202);
+                        res.end();
 
                         break;
 
@@ -400,6 +609,8 @@ workstation.prototype.runServer = function (port) {
              //   break;
       //  }
         if(req.body.id == 'PalletLoaded') {
+            countdown.reset();
+            countdown.start();
             x=0;
             var  palletID = req.body.payload.PalletID;
             console.log('Pallet Loaded and Pallet ID is ',palletID);
@@ -410,12 +621,12 @@ workstation.prototype.runServer = function (port) {
                     connection.query("UPDATE pallets SET PalletID = ? WHERE Status = 'processed'", palletID, function (err) {
                         if(!err){ console.log(' GOING TO LOAD~~~~~~~~~~~~');} else { console.log(err);}
                         connection.query("UPDATE pallets SET Status= 'loaded' WHERE PalletID = ?",palletID);
-                    }, 1000);
+                    });
+                },1000);
                     console.log('Pallet of size' + pallet.length + ' Contents:');
                     for(var i=0; i<pallet.length;i++) {
                         console.log(pallet[i]);
                     }
-                });
             });
 
             setTimeout(function(){
@@ -437,22 +648,58 @@ workstation.prototype.runServer = function (port) {
                     console.log('Error Accomplishing Initial Transfer');
                 }
                 else {
-                    console.log(body);
                     console.log('Initial Transfer Completed');
                 }
             });
             }, 2000);
+            // res.writeHead(202);
+            res.end();
         }
         //IF NEW PALLET IS INTRODUCED IN ALL WORKSTATIONS
         if(req.body.id == 'PaperLoaded') {
+            request.get("http://localhost:3000/RTU/SimCNV2/data/P1", function (req, res, body) {
+                var obj = JSON.parse(res.body);
+                var present = obj.v;
+                if (!present) {
+                    setTimeout(function() {
+                        ref1.transzone(3, 5);
+                    },1000);
+                }
 
-                ref.transzone(3, 5);
+                else {
+
+                    //write code to invoke the above after 10 seconds
+                }
+            });
+
+            res.end();
 
         }
     });
     app.listen(port, hostname, function(){
         console.log(` Server running at http://${hostname}:${port}/`);
     });
+
+    if((ref1.wsnumber>0)&&(ref1.wsnumber<10)) {
+        request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z1_Changed/notifs', {form: {destUrl: "http://localhost:600"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+        request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z2_Changed/notifs', {form: {destUrl: "http://localhost:600"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+        request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z3_Changed/notifs', {form: {destUrl: "http://localhost:600"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+        if((ref1.wsnumber!=1)&&(ref1.wsnumber!=7))
+        {
+            request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z4_Changed/notifs', {form: {destUrl: "http://localhost:600"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+            request.post('http://localhost:3000/RTU/SimROB'+ref1.wsnumber+'/events/DrawEndExecution/notifs', {form: {destUrl: "http://localhost:600"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+        }
+        request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z5_Changed/notifs', {form: {destUrl: "http://localhost:600"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+    }
+    if((ref1.wsnumber>9)&&(ref1.wsnumber<13)) {
+        request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z1_Changed/notifs', {form: {destUrl: "http://localhost:60"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+        request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z2_Changed/notifs', {form: {destUrl: "http://localhost:60"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+        request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z3_Changed/notifs', {form: {destUrl: "http://localhost:60"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+        request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z4_Changed/notifs', {form: {destUrl: "http://localhost:60"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+        request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z5_Changed/notifs', {form: {destUrl: "http://localhost:60"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+        request.post('http://localhost:3000/RTU/SimROB'+ref1.wsnumber+'/events/DrawEndExecution/notifs', {form: {destUrl: "http://localhost:60"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+    }
+
 };
 
 
@@ -527,7 +774,8 @@ var ws12 = new workstation(12,  'red');
 //HANDLES SUBMIT AFTER MAKING ORDER
 app.get('/submit', function(){
 var rows_;
-
+countdown.reset();
+    countdown.start();
     var counter = 0;
 
     connection.query("SELECT * FROM Products INNER JOIN Orders ON Products.ProductID = Orders.ProductID WHERE Products.status = 'ordered'", function(results,rows){
@@ -539,6 +787,9 @@ var rows_;
         console.log(rows);
             counter= 0;
             counter++;
+
+            //CREATING PALLETS TABLE FROM ORDERS AND PRODUCTS TABLES WHICH INTURN IS FROM THE WEB INTERFACE
+
             for (rows_ = 0; rows_ < rows.length; rows_++) {   //if using dynamic form revert to rows.length instead if ++counter
                 for (var qty = 0; qty < rows[0].Quantity; qty++) {
                     var random =  Math.floor(Math.random()*90000) + 10000;
@@ -605,6 +856,7 @@ workstation.prototype.transzone = function (zone1,zone2) {
         else {
             console.log(body);
             console.log('Requested to Transfer from ' + zone1 + 'to' + zone2 + 'in workstation ' + ref.wsnumber);
+            // res.end();
         }
     });
 
@@ -624,33 +876,7 @@ function subscriptions() {
     var flag=0;
     request.post('http://localhost:3000/RTU/SimROB7/events/PalletLoaded/notifs', {form: {destUrl: "http://localhost:6007/notifs/7"}}, function (err) {if (err) {flag=1;} else{ console.log('subscribed to pallet load');}});
     request.post('http://localhost:3000/RTU/SimROB1/events/PaperLoaded/notifs', {form: {destUrl: "http://localhost:6001/notifs/1"}}, function (err) {if (err) {flag=1;}});
-    request.post('	http://localhost:3000/RTU/SimROB*/events/DrawEndExecution/notifs', {form: {destUrl: "http://localhost:6001/notifs/1"}}, function (err) {if (err) {flag=1;}});
-    for(var i=1; i<10; i++)
-    { for(var j=1; j<6; j++){
-        if((( i == 1)&&(j==4))||((i==7)&&(j==4))){
-            continue;
-        }
-        else {
-            request.post('	http://localhost:3000/RTU/SimCNV'+i+'/events/Z'+j+'_Changed/notifs', {form: {destUrl: "http://localhost:600"+i+"/notifs/"+i}}, function (err) {if (err) {flag=1;}});
-            request.post('	http://localhost:3000/RTU/SimROB'+i+'/events/DrawEndExecution/notifs', {form: {destUrl: "http://localhost:600"+i+"/notifs/"+i}}, function (err) {if (err) {flag=1;}});
-        }
-    }}
-    for(var i=10; i<13; i++)
-    { for(var j=1; j<6; j++){
-        if((( i == 1)&&(j==4))||((i==7)&&(j==4))){
-            continue;
-        }
-        else {
-            request.post('	http://localhost:3000/RTU/SimCNV'+i+'/events/Z'+j+'_Changed/notifs', {form: {destUrl: "http://localhost:60"+i+"/notifs/"+i}}, function (err) {if (err) {flag=1;}});
-            request.post('	http://localhost:3000/RTU/SimROB'+i+'/events/DrawEndExecution/notifs', {form: {destUrl: "http://localhost:60"+i+"/notifs/"+i}}, function (err) {if (err) {flag=1;}});
-        }
-    }}
 
-
-
-    if(!flag){
-        console.log('All subscriptions made without any errors');
-    }
 }
 
 
