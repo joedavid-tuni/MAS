@@ -84,9 +84,9 @@ app.post('/submit', function(req, res) {
                 var telephoneno = fieldvalues[i+2];
                 var frame = fieldvalues[i+3];
                 var frame_colour = fieldvalues[i+4];
-                var screen_type = fieldvalues[i+5];
+                var screen_type = fieldvalues[i+7];
                 var screen_colour = fieldvalues[i+6];
-                var keyboard = fieldvalues[i+7];
+                var keyboard = fieldvalues[i+5];
                 var keyboard_colour = fieldvalues[i+8];
                 var order = fieldvalues[i+9];
 

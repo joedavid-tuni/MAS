@@ -469,7 +469,13 @@ workstation.prototype.runServer = function (port) {
                                 var palletID2 = req.body.payload.PalletID;
                                 for (var i = 0; i < pallet.length; i++) {
                                     if (pallet[i].palletID == palletID2) {
+                                        console.log("MATCH FOUND!!!!~~~~~~~~~!!!!! for");
+                                        console.log('Match for : ', req.body.payload.PalletID);
+                                        console.log('Found as', pallet[i].palletID);
                                         index3 = i;
+                                        console.log(index3);
+                                        break;
+
                                     }
                                 }
 
@@ -639,15 +645,15 @@ workstation.prototype.runServer = function (port) {
                         countdown.reset();
                         countdown.start();
                         x=0;
-                        var  palletID = req.body.payload.PalletID;
-                        console.log('Pallet Loaded and Pallet ID is ',palletID);
+                        var  palletID5 = req.body.payload.PalletID;
+                        console.log('Pallet Loaded and Pallet ID is ',palletID5);
                         connection.query("SELECT * FROM Pallets where Status = 'processed'", function(results,rows) {
 
-                            pallet.push(new pallAgent(rows[0].OrderID, rows[0].ProductID, rows[0].Frametype, rows[0].Framecolour, rows[0].Screentype, rows[0].Screencolour, rows[0].Keyboardtype, rows[0].Keyboardcolour, palletID));
+                            pallet.push(new pallAgent(rows[0].OrderID, rows[0].ProductID, rows[0].Frametype, rows[0].Framecolour, rows[0].Screentype, rows[0].Screencolour, rows[0].Keyboardtype, rows[0].Keyboardcolour, palletID5));
                             setTimeout(function() {
-                                connection.query("UPDATE pallets SET PalletID = ? WHERE Status = 'processed'", palletID, function (err) {
+                                connection.query("UPDATE pallets SET PalletID = ? WHERE Status = 'processed'", palletID5, function (err) {
                                     if(!err){ console.log(' GOING TO LOAD~~~~~~~~~~~~');} else { console.log(err);}
-                                    connection.query("UPDATE pallets SET Status= 'loaded' WHERE PalletID = ?",palletID);
+                                    connection.query("UPDATE pallets SET Status= 'loaded' WHERE PalletID = ?",palletID5);
                                 });
                             },1000);
                             console.log('Pallet of size' + pallet.length + ' Contents:');
