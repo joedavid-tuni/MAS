@@ -5,10 +5,9 @@
 var mysql = require('mysql');
 var heartbeats = require('heartbeats');
 var express = require('express');
-var bodyParser = require('body-parser');
 var app = express();
 var http = require('http');
-
+var bodyParser = require('body-parser');
 var request = require('request');
 var Countdown = require('timepiece').Countdown;
 var countdown = new Countdown();
@@ -85,9 +84,11 @@ var workstation= function (wsnumber, capability) {
     this.zone3=false;
     this.zone4=false;
     this.zone5=false;
-    this.shared =false;
+    this.flag =false;
     this.port  = 1234;
     this.url = "127.0.0.1";
+    this.buffer = 'free';
+    this.status = 'busy';
     // if(!((wsnumber == 1)||(wsnumber == 7))) {
     //     this.loadpen(wsnumber, capability);
     // }
@@ -157,90 +158,148 @@ pallAgent.prototype.currentneed = function () {
 //     }
 //
 // };
-//
-//
-// workstation.prototype.work= function (index) {
-//
-//     app.use(bodyParser.urlencoded({ extended: false }));
-// var ref =this;
-//     switch (this.wsnumber){
-//
-//         case 1:
-//             if(pallet[index].currentneed_ == 'paper') {
 
-//             }
-//             else ref.transzone(3,5);
-//             break;
-//
-//         case 7:     //INSERT CODE FOR WORKSTATION 7
-//
-//             break;
-//
-//         case 2:
-//         case 3:
-//         case 4:
-//         case 5:
-//         case 6:
-//         case 8:
-//         case 9:
-//         case 10:
-//         case 11:
-//         case 12:
-//             var url="";
-//             if(!(pallet[index].frame)){
-//               //  if(pallet[index].frameType==1){url="http://localhost:3000/RTU/SimROB2/services/Draw1"};
-//
-//                 var options = {
-//                     method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
-//                     body: {"destUrl": "http://127.0.0.1"}, // Javascript object
-//                     json: true,
-//                     url: "	http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].frameType,
-//                     headers: {
-//                         'Content-Type': 'application/json'
-//                     }
-//                 };
-//                 //Print the result of the HTTP POST request
-//                 request(options, function () {
-//                     // if (err){
-//                     //     console.log('Error drawing frame, Error:');
-//                     //     console.log(err);
-//                     // }
-//                     // else{
-//                         console.log('Requested to draw frame of type' + pallet[index].frameType + ' and of colour ' + pallet[index].frameColour );
-//                     // }
-//                 });
-//         }
-//             else if(!(pallet[index].screen)){
-//                 if (pallet[index].currentneed()==ref.capability){       //http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].screenType, function(req,res,err)
-//
-//                 }
-//                 else{
-//
-//                 }
-//
-//             }
-//             else if(!(pallet[index].keyboard)){
-//                 if (pallet[index].currentneed()==ref.capability){ //http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].keyboardType
-//
-//                 }
-//                 else{
-//
-//
-//
-//                 }
-//
-//             }
-//
-//             else if (pallet[index].currentneed_ == 'complete'){
-//
-//
-//             }
-//         break;
-//
-//
-//
-//     }
-// };
+
+workstation.prototype.work= function (index) {
+var ref =this;
+    switch (this.wsnumber){
+
+        case 1:
+            if(pallet[index].currentneed_ == 'paper') {
+                var options = {
+                    method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+                    body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                    json: true,
+                    url: "	http://localhost:3000/RTU/SimROB" + this.wsnumber + "/services/LoadPaper",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                //Print the result of the HTTP POST request
+                request(options, function (err) {
+                    if (err) {
+                        console.log('Error Loading Paper');
+                    }
+                    else {
+
+                        console.log('Debug 3~~~~~~~~~~~~~~~~~~~~~`');
+                        pallet[index].currentneed_ = pallet[index].frameColour;
+                        pallet[index].paper = true;
+                    }
+                });
+            }
+            else ref.transzone(3,5);
+            break;
+
+        case 7:     //INSERT CODE FOR WORKSTATION 7
+
+            break;
+
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+            var url="";
+            if(!(pallet[index].frame)){
+              //  if(pallet[index].frameType==1){url="http://localhost:3000/RTU/SimROB2/services/Draw1"};
+
+                var options = {
+                    method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+                    body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                    json: true,
+                    url: "	http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].frameType,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                //Print the result of the HTTP POST request
+                request(options, function () {
+                    // if (err){
+                    //     console.log('Error drawing frame, Error:');
+                    //     console.log(err);
+                    // }
+                    // else{
+                        console.log('Requested to draw frame of type' + pallet[index].frameType + ' and of colour ' + pallet[index].frameColour );
+                    // }
+                });
+        }
+            else if(!(pallet[index].screen)){
+                if (pallet[index].currentneed()==ref.capability){       //http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].screenType, function(req,res,err)
+                    var options = {
+                        method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+                        body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                        json: true,
+                        url: "	http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].screenType,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    };
+                    //Print the result of the HTTP POST request
+                    request(options, function () {
+                        // if (err){
+                        //     console.log('Error drawing frame, Error:');
+                        //     console.log(err);
+                        // }
+                        // else{
+                        console.log('Requested to draw Screen of type' + pallet[index].screenType + ' and of colour ' + pallet[index].screenColour );
+                        // }
+                    });
+                }
+                else{
+
+                    //HANDLE FLAGG
+                    if(!ref.flag) {
+                        ref.transzone(3, 5);
+                    }
+
+                }
+
+            }
+            else if(!(pallet[index].keyboard)){
+                if (pallet[index].currentneed()==ref.capability){ //http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].keyboardType
+                    var options = {
+                        method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+                        body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                        json: true,
+                        url: "	http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].keyboardType,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    };
+                    //Print the result of the HTTP POST request
+                    request(options, function () {
+                        // if (err){
+                        //     console.log('Error drawing frame, Error:');
+                        //     console.log(err);
+                        // }
+                        // else{
+                        console.log('Requested to draw Keyboard of type' + pallet[index].keyboardType + ' and of colour ' + pallet[index].keyboardColour );
+                        // }
+                    });
+                }
+                else{
+
+                    //HANDLE FLAG
+                 if(!ref.flag) {
+                     ref.transzone(3, 5);
+                 }
+
+
+                }
+
+            }
+        break;
+
+
+
+    }
+};
 
 
 //METHOD RUNSERVER OF CLASS WORKSTATION
@@ -248,10 +307,6 @@ workstation.prototype.runServer = function (port) {
     this.port = port;
     var ref1 = this;
     var hostname = this.url;
-
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: false }));
-
 
 
 
@@ -287,9 +342,9 @@ workstation.prototype.runServer = function (port) {
 
                           var palletID = req.body.payload.PalletID;
 
-                          for (var i = 0; i < pallet.length; i++) {
-                              if (pallet[i].palletID == palletID) {
-                                  index1 = i;
+                          for (var j = 0; j < pallet.length; j++) {
+                              if (pallet[j].palletID == palletID) {
+                                  index1 = j;
                                   console.log('Found at position', index1);
                                   break;
                               }
@@ -398,12 +453,11 @@ workstation.prototype.runServer = function (port) {
                               case "SimCNV12":
 
 
-                                  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
-                                      var obj = JSON.parse(res.body);
-                                      var present = obj.v;
-                                      console.log('Current Status of zone 2 of workstation ' + ref1.wsnumber);
-                                      console.log(present);
-                                      if((!(present))&&((ref1.capability == pallet[index1].currentneed()))){
+                                //  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
+                                  //    var obj = JSON.parse(res.body);
+                                  //    var present = obj.v;
+//                                 //     console.log(present);
+                                      if((ref1.capability == pallet[index1].currentneed())){
                                           setTimeout(function () {
                                               ref1.transzone(1, 2);
                                           }, 1000);
@@ -413,7 +467,7 @@ workstation.prototype.runServer = function (port) {
                                               ref1.transzone(1, 4);
                                           }, 1000);
                                       }
-                                  });
+
 
                                   break;
                           }
@@ -538,7 +592,8 @@ workstation.prototype.runServer = function (port) {
                                         break;
 
                                     case "SimCNV1":
-
+                                        setTimeout(function() {
+                                        },1000);
 
                                     case "SimCNV2":
                                     case "SimCNV3":
@@ -550,182 +605,9 @@ workstation.prototype.runServer = function (port) {
                                     case "SimCNV10":
                                     case "SimCNV11":
                                     case "SimCNV12":
-                                        if((pallet[index3].currentneed_ == 'paper')){
-
-                                            var options3 = {
-                                                method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
-                                                body: {"destUrl": "http://127.0.0.1"}, // Javascript object
-                                                json: true,
-                                                url: "	http://localhost:3000/RTU/SimROB" + ref1.wsnumber + "/services/LoadPaper",
-                                                headers: {
-                                                    'Content-Type': 'application/json'
-                                                }
-                                            };
-                                            //Print the result of the HTTP POST request
-                                            request(options3, function (err) {
-                                                if (err) {
-                                                    console.log('Error Loading Paper');
-                                                }
-                                                else {
-
-                                                    console.log('Debug 3~~~~~~~~~~~~~~~~~~~~~');
-                                                    pallet[index3].currentneed_ = pallet[index3].frameColour;
-                                                    pallet[index3].paper = true;
-                                                }
-                                            });
-
-
-                                        }
-
-                                        else if(!(pallet[index3].frame)){
-                                            //  if(pallet[index].frameType==1){url="http://localhost:3000/RTU/SimROB2/services/Draw1"};
-                                            if(pallet[index3].frameColour == ref1.capability) {
-
-                                                var options4 = {
-                                                    method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
-                                                    body: {"destUrl": "http://127.0.0.1"}, // Javascript object
-                                                    json: true,
-                                                    url: "	http://localhost:3000/RTU/SimROB" + ref1.wsnumber + "/services/Draw" + pallet[index3].frameType,
-                                                    headers: {
-                                                        'Content-Type': 'application/json'
-                                                    }
-                                                };
-                                                //Print the result of the HTTP POST request
-                                                request(options4, function () {
-                                                    // if (err){
-                                                    //     console.log('Error drawing frame, Error:');
-                                                    //     console.log(err);
-                                                    // }
-                                                    // else{
-                                                    console.log('Requested to draw frame of type' + pallet[index3].frameType + ' and of colour ' + pallet[index3].frameColour);
-                                                    // }
-                                                });
-                                            }
-                                        }
-                                        else if(!(pallet[index3].screen)){
-                                            if(pallet[index3].screenColour == ref1.capability) {
-
-                                                var options5 = {
-                                                    method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
-                                                    body: {"destUrl": "http://127.0.0.1"}, // Javascript object
-                                                    json: true,
-                                                    url: "	http://localhost:3000/RTU/SimROB" + ref1.wsnumber + "/services/Draw" + pallet[index3].screenType,
-                                                    headers: {
-                                                        'Content-Type': 'application/json'
-                                                    }
-                                                };
-                                                //Print the result of the HTTP POST request
-                                                request(options5, function () {
-                                                    // if (err){
-                                                    //     console.log('Error drawing frame, Error:');
-                                                    //     console.log(err);
-                                                    // }
-                                                    // else{
-                                                    console.log('Requested to draw Screen of type' + pallet[index3].screenType + ' and of colour ' + pallet[index3].screenColour);
-                                                    // }
-                                                });
-
-                                            }
-                                            else{
-
-                                                if (ref1.wsnumber!=12) {
-                                                    var num =ref1.wsnumber;
-                                                    var num1 =++num;
-                                                    request.get("http://localhost:3000/RTU/SimCNV"+num1+"/data/P1", function (res) {
-                                                        console.log('Checked Workstation 1~~~~~~~~~~~~~~~`');
-                                                        var obj = JSON.parse(res.body);
-                                                        var present = obj.v;
-                                                        if (!(present)) {
-                                                            ref1.shared = true;
-                                                            ref1.transzone(3, 5);
-                                                        }
-                                                        else {
-
-                                                            //write code to repeat the above after 10 seconds;
-                                                        }
-                                                    });
-
-                                                }
-                                                else{
-
-                                                    request.get("http://localhost:3000/RTU/SimCNV1/data/P1", function (res) {
-                                                        console.log('Checked Workstation~~~~~~~~~~~~~~~`');
-                                                        var obj = JSON.parse(res.body);
-                                                        var present = obj.v;
-                                                        if (!(present)) {
-                                                            ref1.shared = true;
-                                                            ref1.transzone(3, 5);
-                                                        }
-                                                        else {
-
-                                                            //write code to repeat the above after 10 seconds;
-                                                        }
-                                                    });
-                                                }
-                                            }
-
-                                        }
-                                        else if(!(pallet[index3].keyboard)){
-                                            if (pallet[index3].keyboardColour==ref1.capability){ //http://localhost:3000/RTU/SimROB"+ref.wsnumber+"/services/Draw"+pallet[index].keyboardType
-                                                var options = {
-                                                    method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
-                                                    body: {"destUrl": "http://127.0.0.1"}, // Javascript object
-                                                    json: true,
-                                                    url: "	http://localhost:3000/RTU/SimROB"+ref1.wsnumber+"/services/Draw"+pallet[index3].keyboardType,
-                                                    headers: {
-                                                        'Content-Type': 'application/json'
-                                                    }
-                                                };
-                                                //Print the result of the HTTP POST request
-                                                request(options, function () {
-                                                    // if (err){
-                                                    //     console.log('Error drawing frame, Error:');
-                                                    //     console.log(err);
-                                                    // }
-                                                    // else{
-                                                    console.log('Requested to draw Keyboard of type' + pallet[index3].keyboardType + ' and of colour ' + pallet[index3].keyboardColour );
-                                                    // }
-                                                });
-                                            }
-                                            else{
-
-                                                if (ref1.wsnumber!=12) {
-                                                    var num =ref1.wsnumber;
-                                                    var num1 =++num;
-                                                    request.get("http://localhost:3000/RTU/SimCNV"+num1+"/data/P1", function (res) {
-                                                        console.log('Checked Workstation 1~~~~~~~~~~~~~~~`');
-                                                        var obj = JSON.parse(res.body);
-                                                        var present = obj.v;
-                                                        if (!(present)) {
-                                                            ref1.shared = true;
-                                                            ref1.transzone(3, 5);
-                                                        }
-                                                        else {
-
-                                                            //write code to repeat the above after 10 seconds;
-                                                        }
-                                                    });
-
-                                                }
-                                                else{
-
-                                                    request.get("http://localhost:3000/RTU/SimCNV1/data/P1", function (res) {
-                                                        console.log('Checked Workstation~~~~~~~~~~~~~~~`');
-                                                        var obj = JSON.parse(res.body);
-                                                        var present = obj.v;
-                                                        if (!(present)) {
-                                                            ref1.shared = true;
-                                                            ref1.transzone(3, 5);
-                                                        }
-                                                        else {
-
-                                                            //write code to repeat the above after 10 seconds;
-                                                        }
-                                                    });
-                                                }
-                                            }
-
-                                        }
+                                        setTimeout(function() {
+                                            ref1.work(index3);
+                                        },1000);
 
                                         break;
                                 }
@@ -739,7 +621,7 @@ workstation.prototype.runServer = function (port) {
                                 if (present) {
                                     setTimeout(function() {
                                     ref1.transzone(2, 3)
-                                    },1500);
+                                    },1000);
                                 }
 
                             });
@@ -753,17 +635,21 @@ workstation.prototype.runServer = function (port) {
 
                     case "Z4_Changed":
 
+
+
                         if ((req.body.payload.PalletID != -1)) {
-                            console.log('\n\n~~~~~~~~~~Z4 CHANGED OF WORKSTATION'+ ref1.wsnumber + '~~~~~~~~~~');
-                            console.log(pallet);
-                            console.log('Pallet Size', pallet.length);
+                            // ref1.zone4 = true;
+
+
                          //   if(ref1.zone5 == false) { //CHECK ALSO IF THERE ISNT ANYTHING AT ZONE 5 NOT ONLY SHARED    !!!!!!!!!!!!!!!!!!!!!!!
 
-                                setTimeout(function () {
-                                    ref1.shared = true;
-                                    ref1.transzone(4, 5);
+                                // setTimeout(function () {
 
-                                }, 1000);
+                                   if(ref1.flag == false){
+                                       ref1.transzone(4, 5);
+                                   }
+                                //
+                                // }, 1000);
                             // }
                            //  else {
                            //      //  write code to wait for 5 seconds and then push from Z4->Z5 (ABOVE CODE)
@@ -771,22 +657,39 @@ workstation.prototype.runServer = function (port) {
 
                         }
 
+                        else if ((req.body.payload.PalletID == -1)) {
+                            // ref1.zone4 = false;
+
+
+                        }
+
+
+
                         res.end();
                         break;
 
                     case "Z5_Changed":
 
 
-                        if ((req.body.payload.PalletID != -1)) {
-                            // console.log('\n\n~~~~~~~~~~Z5 CHANGED OF WORKSTATION'+ ref1.wsnumber + '~~~~~~~~~~');
-                            // console.log(pallet);
+                        console.log(req.body);
 
-                           ref1.zone5 = true;
-                        }
-                        else if (req.body.PalletID == -1){
-                            ref1.zone5 = false;
+                       if (req.body.payload.PalletID == -1){
+                            ref1.flag = false;
 
-                        }
+                            // request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P4", function (req, res, body) {
+                            //
+                            //     console.log("FOUND WAITING AT ZONE 4");
+                            //     var obj = JSON.parse(res.body);
+                            //     var present = obj.v;
+                            //     console.log(present);
+                            //     if (present) {
+                            setTimeout(function(){
+                                    ref1.transzone(4, 5);
+                            },1000);
+                            //     }
+                            //     });
+                            }
+
 
                         res.end();
 
@@ -819,183 +722,28 @@ workstation.prototype.runServer = function (port) {
                                 pallet[index6].frame = true;
                                 pallet[index6].currentneed_ = pallet[index6].screenColour;
                                 console.log('Setting Frame true and Screen as current need');
-                                setTimeout(function(){
-                               if(pallet[index6].screenColour == ref1.capability){
-
-                                   var options1 = {
-                                       method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
-                                       body: {"destUrl": "http://127.0.0.1"}, // Javascript object
-                                       json: true,
-                                       url: "	http://localhost:3000/RTU/SimROB"+ref1.wsnumber+"/services/Draw"+pallet[index6].screenType,
-                                       headers: {
-                                           'Content-Type': 'application/json'
-                                       }
-                                   };
-                                   //Print the result of the HTTP POST request
-                                   request(options1, function () {
-                                       // if (err){
-                                       //     console.log('Error drawing frame, Error:');
-                                       //     console.log(err);
-                                       // }
-                                       // else{
-                                       console.log('Requested to draw Screen of type' + pallet[index6].screenType + ' and of colour ' + pallet[index6].screenColour );
-                                       // }
-                                   });
-
-                               }
-
-                               else{
-                                   if (ref1.wsnumber!=12) {
-                                       var num =ref1.wsnumber;
-                                       var num1 =++num;
-                                       request.get("http://localhost:3000/RTU/SimCNV"+num1+"/data/P1", function (res) {
-                                           console.log('Checked Workstation 1~~~~~~~~~~~~~~~`');
-                                           var obj = JSON.parse(res.body);
-                                           var present = obj.v;
-                                           if (!(present)) {
-                                               ref1.shared = true;
-                                               ref1.transzone(3, 5);
-                                           }
-                                           else {
-
-                                               //write code to repeat the above after 10 seconds;
-                                           }
-                                       });
-
-                                   }
-                                   else{
-
-                                       request.get("http://localhost:3000/RTU/SimCNV1/data/P1", function (res) {
-                                           console.log('Checked Workstation~~~~~~~~~~~~~~~1');
-                                           var obj = JSON.parse(res.body);
-                                           var present = obj.v;
-                                           if (!(present)) {
-                                               ref1.shared = true;
-                                               ref1.transzone(3, 5);
-                                           }
-                                           else {
-
-                                               //write code to repeat the above after 10 seconds;
-                                           }
-                                       });
-                                   }
-
-                               }
-
-                            },1000);
-
+                                // setTimeout(function() {
+                                    ref1.work(index6);
+                                // },1000);
                             }
 
                             if ((req.body.payload.Recipe > 3) && (req.body.payload.Recipe < 7)) {
                                 pallet[index6].screen = true;
                                 pallet[index6].currentneed_ = pallet[index6].keyboardColour;
                                 console.log('Setting Screen true and Keyboard as current need');
-                                console.log('Setting as complete');
-                                setTimeout(function(){
-                                if (pallet[index6].keyboardColour == ref1.capability){
-
-                                    var options = {
-                                        method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
-                                        body: {"destUrl": "http://127.0.0.1"}, // Javascript object
-                                        json: true,
-                                        url: "	http://localhost:3000/RTU/SimROB"+ref1.wsnumber+"/services/Draw"+pallet[index6].keyboardType,
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        }
-                                    };
-                                    //Print the result of the HTTP POST request
-                                    request(options, function () {
-                                        // if (err){
-                                        //     console.log('Error drawing frame, Error:');
-                                        //     console.log(err);
-                                        // }
-                                        // else{
-                                        console.log('Requested to draw Keyboard of type' + pallet[index6].keyboardType + ' and of colour ' + pallet[index6].keyboardColour );
-                                        // }
-                                    });
-
-                                }
-
-                                else{
-                                    if (ref1.wsnumber!=12) {
-                                        var num =ref1.wsnumber;
-                                        var num1 =++num;
-                                        request.get("http://localhost:3000/RTU/SimCNV"+num1+"/data/P1", function (res) {
-                                            console.log('Checked Workstation 1~~~~~~~~~~~~~~~`');
-                                            var obj = JSON.parse(res.body);
-                                            var present = obj.v;
-                                            if (!(present)) {
-                                                ref1.shared = true;
-                                                ref1.transzone(3, 5);
-                                            }
-                                            else {
-
-                                                //write code to repeat the above after 10 seconds;
-                                            }
-                                        });
-
-                                    }
-                                    else{
-
-                                        request.get("http://localhost:3000/RTU/SimCNV1/data/P1", function (res) {
-                                            console.log('Checked Workstation~~~~~~~~~~~~~~~`');
-                                            var obj = JSON.parse(res.body);
-                                            var present = obj.v;
-                                            if (!(present)) {
-                                                ref1.shared = true;
-                                                ref1.transzone(3, 5);
-                                            }
-                                            else {
-
-                                                //write code to repeat the above after 10 seconds;
-                                            }
-                                        });
-                                    }
-
-                                }
-                            },1000);
+                                // setTimeout(function() {
+                                    ref1.work(index6);
+                                // },1000);
                             }
 
                             if ((req.body.payload.Recipe > 6) && (req.body.payload.Recipe < 10)) {
                                 pallet[index6].keyboard = true;
                                 pallet[index6].currentneed_ = 'complete';
                                 console.log('Setting as complete');
-                                setTimeout(function(){
-                                    if (ref1.wsnumber!=12) {
-                                        var num =ref1.wsnumber;
-                                        var num1 =++num;
-                                        request.get("http://localhost:3000/RTU/SimCNV"+num1+"/data/P1", function (res) {
-                                            console.log('Checked Workstation 1~~~~~~~~~~~~~~~`');
-                                            var obj = JSON.parse(res.body);
-                                            var present = obj.v;
-                                            if (!(present)) {
-                                                ref1.shared = true;
-                                                ref1.transzone(3, 5);
-                                            }
-                                            else {
-
-                                                //write code to repeat the above after 10 seconds;
-                                            }
-                                        });
-
-                                    }
-                                    else{
-
-                                        request.get("http://localhost:3000/RTU/SimCNV1/data/P1", function (res) {
-                                            console.log('Checked Workstation~~~~~~~~~~~~~~~`1');
-                                            var obj = JSON.parse(res.body);
-                                            var present = obj.v;
-                                            if (!(present)) {
-                                                ref1.shared = true;
-                                                ref1.transzone(3, 5);
-                                            }
-                                            else {
-
-                                                //write code to repeat the above after 10 seconds;
-                                            }
-                                        });
-                                    }
-                                },1000);
+                                // setTimeout(function() {
+                                ref1.flag=true;
+                                //HANDLE FLAG
+                                ref1.transzone(3, 5);
 
                             }
                         // res.writeHead(202);
@@ -1068,13 +816,14 @@ workstation.prototype.runServer = function (port) {
 
 
                     case "PalletUnloaded":
-
+                        console.log('PALLET UNLOADED!!!!!!!!!!!!!!!!!!!!');
                         request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
                             var obj = JSON.parse(res.body);
                             var present = obj.v;
                             connection.query("SELECT * FROM Pallets where Status = 'in_queue'", function(results,rows) {
 
                                 if((!present)&&(rows.length>0)){
+                                    console.log("Remaining Pallets in Queue: " + rows.length);
 
 
                                             setTimeout(function(){
@@ -1125,9 +874,9 @@ workstation.prototype.runServer = function (port) {
             var present = obj.v;
             console.log('PRESENT VALUE IS~~~~~~~~~', present);
             if (!present) {
-                setTimeout(function() {
+                // setTimeout(function() {
                     ref1.transzone(3, 5);
-                },1000);
+                // },1000);
             }
 
             if (present){
@@ -1149,12 +898,13 @@ workstation.prototype.runServer = function (port) {
         request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z1_Changed/notifs', {form: {destUrl: "http://localhost:600"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
         request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z2_Changed/notifs', {form: {destUrl: "http://localhost:600"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
         request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z3_Changed/notifs', {form: {destUrl: "http://localhost:600"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+        request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z5_Changed/notifs', {form: {destUrl: "http://localhost:600"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
         if((ref1.wsnumber!=1)&&(ref1.wsnumber!=7))
         {
             request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z4_Changed/notifs', {form: {destUrl: "http://localhost:600"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
             request.post('http://localhost:3000/RTU/SimROB'+ref1.wsnumber+'/events/DrawEndExecution/notifs', {form: {destUrl: "http://localhost:600"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
         }
-        request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z5_Changed/notifs', {form: {destUrl: "http://localhost:600"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
+
     }
     if((ref1.wsnumber>9)&&(ref1.wsnumber<13)) {
         request.post('	http://localhost:3000/RTU/SimCNV'+ref1.wsnumber+'/events/Z1_Changed/notifs', {form: {destUrl: "http://localhost:60"+ref1.wsnumber+"/notifs/"+ref1.wsnumber}});
@@ -1344,10 +1094,10 @@ workstation.prototype.transzone = function (zone1,zone2) {
 
 //SUBSCRIBES TO ALL EVENTS FROM THE SIMULATOR
 function subscriptions() {
-    var flag=0;
-    request.post('http://localhost:3000/RTU/SimROB7/events/PalletLoaded/notifs', {form: {destUrl: "http://localhost:6007/notifs/7"}}, function (err) {if (err) {flag=1;} else{ console.log('subscribed to pallet load');}});
-    request.post('http://localhost:3000/RTU/SimROB1/events/PaperLoaded/notifs', {form: {destUrl: "http://localhost:6001/notifs/paperloaded"}}, function (err) {if (err) {flag=1;}});
-    request.post('	http://localhost:3000/RTU/ROB7/events/PalletUnloaded/notifs', {form: {destUrl: "http://localhost:6007/notifs/7"}}, function (err) {if (err) {flag=1;}});
+
+    request.post('http://localhost:3000/RTU/SimROB7/events/PalletLoaded/notifs', {form: {destUrl: "http://localhost:6007/notifs/7"}}, function (err) {if (err) {} else{ console.log('subscribed to pallet load');}});
+    request.post('http://localhost:3000/RTU/SimROB1/events/PaperLoaded/notifs', {form: {destUrl: "http://localhost:6001/notifs/paperloaded"}}, function (err) {if (err) {}});
+    request.post('	http://localhost:3000/RTU/SimROB7/events/PalletUnloaded/notifs', {form: {destUrl: "http://localhost:6007/notifs/7"}}, function (err) {if (err) {}});
 }
 
 
