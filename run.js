@@ -13,8 +13,9 @@ var Countdown = require('timepiece').Countdown;
 var countdown = new Countdown();
 const wait = 5000;
 var pallet = [];
+var pallet_C2Z1;
 
-countdown.set(10);
+countdown.set(5);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -37,7 +38,8 @@ connection.connect(function (err) {
 });
 
 
-countdown.on('finish', function check_queue() {
+app.post('/load', function(req,res){
+    console.log('Request to Load received . .');
     connection.query("SELECT * FROM Pallets where Status = 'in_queue'", function(results,rows){
 
         if (rows.length ==0 ){
@@ -45,24 +47,21 @@ countdown.on('finish', function check_queue() {
         }
         else{
             setTimeout(function(){
-            var options = {
-                method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
-                body: {"destUrl": "http://127.0.0.1"}, // Javascript object
-                json: true,
-                url: "	http://localhost:3000/RTU/SimROB7/services/LoadPallet",
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            };
-            //Print the result of the HTTP POST request
-            request(options, function (err, res, body) {
-                if (err) {
-                    console.log('Error Loading Pallet');
-                }
-                else {
-                    console.log(body);
-                }
-            });
+                var options = {
+                    method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+                    body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                    json: true,
+                    url: "	http://localhost:3000/RTU/SimROB7/services/LoadPallet",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                //Print the result of the HTTP POST request
+                request(options, function (err) {
+                    if (err) {
+                        console.log('Error Loading Pallet');
+                    }
+                });
             }, 1000);
             connection.query("UPDATE Pallets SET Status = 'processed' WHERE ProductID = ?", rows[0].ProductID, function(){
                 console.log("Rows 'processed' Successfully");
@@ -70,6 +69,7 @@ countdown.on('finish', function check_queue() {
         }
 
     });
+res.end();
 
 });
 
@@ -163,26 +163,30 @@ var ref =this;
     switch (this.wsnumber){
 
         case 1:
-            var options = {
-            method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
-            body: {"destUrl": "http://127.0.0.1"}, // Javascript object
-            json: true,
-            url: "	http://localhost:3000/RTU/SimROB"+this.wsnumber+"/services/LoadPaper",
-            headers: {
-                'Content-Type': 'application/json'
+            if(pallet[index].currentneed_ == 'paper') {
+                var options = {
+                    method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+                    body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                    json: true,
+                    url: "	http://localhost:3000/RTU/SimROB" + this.wsnumber + "/services/LoadPaper",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                //Print the result of the HTTP POST request
+                request(options, function (err) {
+                    if (err) {
+                        console.log('Error Loading Paper');
+                    }
+                    else {
+
+                        console.log('Debug 3~~~~~~~~~~~~~~~~~~~~~`');
+                        pallet[index].currentneed_ = pallet[index].frameColour;
+                        pallet[index].paper = true;
+                    }
+                });
             }
-        };
-            //Print the result of the HTTP POST request
-            request(options, function (err, res, body) {
-                if (err) {
-                    console.log('Error Loading Paper');
-                }
-                else {
-                    console.log(body);
-                    console.log('Debug 3~~~~~~~~~~~~~~~~~~~~~`');
-                    pallet[index].currentneed_ = pallet[index].frameColour;
-                }
-            });
+            else ref.transzone(3,5);
             break;
 
         case 7:     //INSERT CODE FOR WORKSTATION 7
@@ -213,7 +217,7 @@ var ref =this;
                     }
                 };
                 //Print the result of the HTTP POST request
-                request(options, function (err, res, body) {
+                request(options, function () {
                     // if (err){
                     //     console.log('Error drawing frame, Error:');
                     //     console.log(err);
@@ -235,7 +239,7 @@ var ref =this;
                         }
                     };
                     //Print the result of the HTTP POST request
-                    request(options, function (err, res, body) {
+                    request(options, function () {
                         // if (err){
                         //     console.log('Error drawing frame, Error:');
                         //     console.log(err);
@@ -247,7 +251,7 @@ var ref =this;
                 }
                 else{
 
-                    request.get("http://localhost:3000/RTU/SimCNV"+ref.wsnumber+"/data/P5", function (req, res, body) {
+                    request.get("http://localhost:3000/RTU/SimCNV"+ref.wsnumber+"/data/P5", function (res) {
                         var obj = JSON.parse(res.body);
                         var present = obj.v;
                         if (!(present) ) {
@@ -274,7 +278,7 @@ var ref =this;
                         }
                     };
                     //Print the result of the HTTP POST request
-                    request(options, function (err, res, body) {
+                    request(options, function () {
                         // if (err){
                         //     console.log('Error drawing frame, Error:');
                         //     console.log(err);
@@ -285,7 +289,7 @@ var ref =this;
                     });
                 }
                 else{
-                    request.get("http://localhost:3000/RTU/SimCNV"+ref.wsnumber+"/data/P5", function (req, res, body) {
+                    request.get("http://localhost:3000/RTU/SimCNV"+ref.wsnumber+"/data/P5", function (res) {
                         var obj = JSON.parse(res.body);
                         var present = obj.v;
                         if (!(present)) {
@@ -336,9 +340,11 @@ workstation.prototype.runServer = function (port) {
 
                     case "Z1_Changed":
 
+
                       if ((req.body.payload.PalletID != -1)) { //If new pallet is introduced and not leaving (as we receive notifications for both)
-                          console.log('~~~~~~~~~~~~~PALLET INSERTED INTO WORKSTATION: ' + ref1.wsnumber + '~~~~~~~~~~~~~~');
+                          console.log('\n\n~~~~~~~~~~Z1 CHANGED OF WORKSTATION'+ ref1.wsnumber + '~~~~~~~~~~');
                           console.log(pallet);
+                          console.log('Pallet Size', pallet.length);
                           console.log('\n\n');
                           var index1 = 0;
                           //IF A PALLET IS INTRODUCED AT ZONE 1
@@ -361,7 +367,7 @@ workstation.prototype.runServer = function (port) {
 
                                   console.log('Current need of Pallet is ', pallet[index1].currentneed());
                                   console.log(pallet);
-                                  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res, body) {
+                                  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
                                       var obj = JSON.parse(res.body);
                                       var present = obj.v;
                                       if (!present) {
@@ -374,26 +380,90 @@ workstation.prototype.runServer = function (port) {
                                       }
                                   });
 
-                                  res.end();
+
                                   break;
 
                               case "SimCNV7":
-                                  //HANDEL WORKSTATION 7 ZONE 1 HERE LATER . .
+                                  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
+                                      var obj = JSON.parse(res.body);
+                                      var present = obj.v;
+                                      if(!present){
+                                          ref1.transzone(1,2);
+                                      }
+                                  });
+
                                   break;
 
+                              case "SimCNV8":
+                                  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
+                                      var obj = JSON.parse(res.body);
+                                      var present = obj.v;
+                                      console.log('Current Status of zone 2 of workstation ' + ref1.wsnumber);
+                                      console.log(present);
+                                      if((!(present))&&((ref1.capability == pallet[index1].currentneed()))){
+                                          setTimeout(function () {
+                                              ref1.transzone(1, 2);
+                                          }, 1000);
+                                      }
+                                      else {
+                                          setTimeout(function () {
+                                              ref1.transzone(1, 4);
+                                          }, 1000);
+                                      }
+                                  });
+
+                                  //IF ZONE 1 OF WORKSTATION 8 OCCURS AND THERE IS NO PALLET PRESENT IN ZONE 2 OF WORKSTATION 7
+                                  request.get("http://localhost:3000/RTU/SimCNV7/data/P2", function (req, res) {
+                                      var obj = JSON.parse(res.body);
+                                      var present = obj.v;
+                                      if(!present) {
+                                          connection.query("SELECT * FROM Pallets where Status = 'in_queue'", function (results, rows) {
+
+                                              if (rows.length == 0) {
+                                                  console.log('No Pallets Ordered to Produce');
+                                              }
+                                              else {
+                                                  setTimeout(function () {
+                                                      var options = {
+                                                          method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+                                                          body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                                                          json: true,
+                                                          url: "	http://localhost:3000/RTU/SimROB7/services/LoadPallet",
+                                                          headers: {
+                                                              'Content-Type': 'application/json'
+                                                          }
+                                                      };
+                                                      //Print the result of the HTTP POST request
+                                                      request(options, function (err) {
+                                                          if (err) {
+                                                              console.log('Error Loading Pallet');
+                                                          }
+                                                      });
+                                                      connection.query("UPDATE Pallets SET Status = 'processed' WHERE ProductID = ?", rows[0].ProductID, function () {
+                                                          console.log("Rows 'processed' Successfully");
+                                                      });
+                                                  }, 2000);
+
+                                              }
+
+                                          });
+                                      }
+                                  });
+
+
+                                  break;
                               case "SimCNV2":
                               case "SimCNV3":
                               case "SimCNV4":
                               case "SimCNV5":
                               case "SimCNV6":
-                              case "SimCNV8":
                               case "SimCNV9":
                               case "SimCNV10":
                               case "SimCNV11":
                               case "SimCNV12":
 
 
-                                  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res, body) {
+                                  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
                                       var obj = JSON.parse(res.body);
                                       var present = obj.v;
                                       console.log('Current Status of zone 2 of workstation ' + ref1.wsnumber);
@@ -413,16 +483,20 @@ workstation.prototype.runServer = function (port) {
                                   break;
                           }
                       }
+                        res.end();
                         break;
 
                     case "Z2_Changed":
 
                         if ((req.body.payload.PalletID != -1)) {
+                            console.log('\n\n~~~~~~~~~~Z2 CHANGED OF WORKSTATION'+ ref1.wsnumber + '~~~~~~~~~~');
+                            console.log('Pallet Size', pallet.length);
+                            console.log(pallet);
 
                             switch (req.body.senderID) {
 
                                 case"SimCNV7":
-                                        //INSERT CODE TO HANDLE WORKSTATION 7 HERE
+                                        ref1.transzone(2,3);
                                     break;
 
                                 case "SimCNV1":
@@ -438,7 +512,7 @@ workstation.prototype.runServer = function (port) {
                                 case "SimCNV12":
 
 
-                                    request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P3", function (req, res, body) {
+                                    request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P3", function (req, res) {
                                         var obj = JSON.parse(res.body);
                                         var present = obj.v;
                                         if (!present) {
@@ -454,9 +528,25 @@ workstation.prototype.runServer = function (port) {
                                     });
                                     break;
                             }
-                            res.end();
+
 
                         }
+                        if ((req.body.payload.PalletID == -1)) {
+                            switch (req.body.senderID) {
+                                case "SimCNV1":
+                                    request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P1", function (req, res) {
+                                        var obj = JSON.parse(res.body);
+                                        var present = obj.v;
+                                    if(present){
+                                        ref1.transzone(1,2);
+                                    }
+
+                                    });
+                                    break;
+                            }
+
+                        }
+                        res.end();
                         break;
 
 
@@ -464,11 +554,14 @@ workstation.prototype.runServer = function (port) {
 
                             //IF A PALLET ARRIVES AT ZONE 3 AND THAT HAPPENS NOT AT WORKSTATION 7 (TO PREVENT SIMILAR CONDITIONS WHILE LOADING PALLET)
                             if (req.body.payload.PalletID != -1) {
+                                console.log('\n\n~~~~~~~~~~Z3 CHANGED OF WORKSTATION'+ ref1.wsnumber + '~~~~~~~~~~');
+                                console.log(pallet);
+                                console.log('Pallet Size', pallet.length);
                                 var index3;
 
-                                var palletID2 = req.body.payload.PalletID;
+                                var palletID3 = req.body.payload.PalletID;
                                 for (var i = 0; i < pallet.length; i++) {
-                                    if (pallet[i].palletID == palletID2) {
+                                    if (pallet[i].palletID == palletID3) {
                                         console.log("MATCH FOUND!!!!~~~~~~~~~!!!!! for");
                                         console.log('Match for : ', req.body.payload.PalletID);
                                         console.log('Found as', pallet[i].palletID);
@@ -482,10 +575,37 @@ workstation.prototype.runServer = function (port) {
                                 switch (req.body.senderID) {
 
                                     case"SimCNV7":
-                                        //INSERT CODE TO HANDLE WORKSTATION 7 HERE
+                                           if (pallet[index3].currentneed_ == 'complete'){
+
+                                               var options = {
+                                                   method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+                                                   body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                                                   json: true,
+                                                   url: "http://localhost:3000/RTU/SimROB7/services/UnloadPallet",
+                                                   headers: {
+                                                       'Content-Type': 'application/json'
+                                                   }
+                                               };
+                                               //Print the result of the HTTP POST request
+                                               request(options, function (err) {
+                                                   if (err) {
+                                                       console.log('Error Unloading Pallet');
+                                                   }
+
+                                               });
+
+                                           }
+
+                                           else {
+                                               ref1.transzone(3,5);
+
+                                           }
                                         break;
 
                                     case "SimCNV1":
+                                        setTimeout(function() {
+                                        },1000);
+
                                     case "SimCNV2":
                                     case "SimCNV3":
                                     case "SimCNV4":
@@ -506,7 +626,7 @@ workstation.prototype.runServer = function (port) {
                             }
 
                         if (req.body.payload.PalletID == -1) {
-                            request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res, body) {
+                            request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
                                 var obj = JSON.parse(res.body);
                                 var present = obj.v;
                                 if (present) {
@@ -527,7 +647,9 @@ workstation.prototype.runServer = function (port) {
                     case "Z4_Changed":
 
                         if ((req.body.payload.PalletID != -1)) {
-
+                            console.log('\n\n~~~~~~~~~~Z4 CHANGED OF WORKSTATION'+ ref1.wsnumber + '~~~~~~~~~~');
+                            console.log(pallet);
+                            console.log('Pallet Size', pallet.length);
                          //   if(ref1.zone5 == false) { //CHECK ALSO IF THERE ISNT ANYTHING AT ZONE 5 NOT ONLY SHARED    !!!!!!!!!!!!!!!!!!!!!!!
 
                                 setTimeout(function () {
@@ -547,7 +669,10 @@ workstation.prototype.runServer = function (port) {
 
                     case "Z5_Changed":
 
+
                         if ((req.body.payload.PalletID != -1)) {
+                            // console.log('\n\n~~~~~~~~~~Z5 CHANGED OF WORKSTATION'+ ref1.wsnumber + '~~~~~~~~~~');
+                            // console.log(pallet);
 
                            ref1.zone5 = true;
                         }
@@ -603,10 +728,10 @@ workstation.prototype.runServer = function (port) {
 
                             if ((req.body.payload.Recipe > 6) && (req.body.payload.Recipe < 10)) {
                                 pallet[index6].keyboard = true;
-                                pallet[index6].currentneed_ = 'Complete';
+                                pallet[index6].currentneed_ = 'complete';
                                 console.log('Setting as complete');
                                 // setTimeout(function() {
-                                request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P5", function (req, res, body) {
+                                request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P5", function (req, res) {
                                     var obj = JSON.parse(res.body);
                                     var present = obj.v;
                                     if (!(present)) {
@@ -642,9 +767,8 @@ workstation.prototype.runServer = function (port) {
                     //     res.end();
                     //     break;
                     case "PalletLoaded":
-                        countdown.reset();
-                        countdown.start();
-                        x=0;
+
+
                         var  palletID5 = req.body.payload.PalletID;
                         console.log('Pallet Loaded and Pallet ID is ',palletID5);
                         connection.query("SELECT * FROM Pallets where Status = 'processed'", function(results,rows) {
@@ -663,7 +787,6 @@ workstation.prototype.runServer = function (port) {
                         });
 
                         setTimeout(function(){
-                            x++;
                             console.log(req.body);
                             var options = {
                                 method: 'POST',
@@ -676,7 +799,7 @@ workstation.prototype.runServer = function (port) {
                             };
 
                             //Print the result of the HTTP POST request
-                            request(options, function (err, res, body) {
+                            request(options, function (err) {
                                 if (err) {
                                     console.log('Error Accomplishing Initial Transfer');
                                 }
@@ -687,6 +810,51 @@ workstation.prototype.runServer = function (port) {
                         }, 2000);
                         // res.writeHead(202);
                         res.end();
+                        break;
+
+
+                    case "PalletUnloaded":
+
+                        request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
+                            var obj = JSON.parse(res.body);
+                            var present = obj.v;
+                            connection.query("SELECT * FROM Pallets where Status = 'in_queue'", function(results,rows) {
+
+                                if((!present)&&(rows.length>0)){
+
+
+                                            setTimeout(function(){
+                                                var options = {
+                                                    method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+                                                    body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                                                    json: true,
+                                                    url: "	http://localhost:3000/RTU/SimROB7/services/LoadPallet",
+                                                    headers: {
+                                                        'Content-Type': 'application/json'
+                                                    }
+                                                };
+                                                //Print the result of the HTTP POST request
+                                                request(options, function (err) {
+                                                    if (err) {
+                                                        console.log('Error Loading Pallet');
+                                                    }
+
+                                                });
+                                            }, 1000);
+                                            connection.query("UPDATE Pallets SET Status = 'processed' WHERE ProductID = ?", rows[0].ProductID, function(){
+                                                console.log("Rows 'processed' Successfully");
+                                            });
+
+
+
+                                }
+
+                            });
+
+
+                        });
+                        res.end();
+                        break;
                 }
 
              //   break;
@@ -698,7 +866,7 @@ workstation.prototype.runServer = function (port) {
 
     app.post('/notifs/paperloaded', function(req,res){
         console.log(req.body);
-        request.get("http://localhost:3000/RTU/SimCNV2/data/P1", function (req, res, body) {
+        request.get("http://localhost:3000/RTU/SimCNV2/data/P1", function (req, res) {
             var obj = JSON.parse(res.body);
             var present = obj.v;
             console.log('PRESENT VALUE IS~~~~~~~~~', present);
@@ -715,7 +883,7 @@ workstation.prototype.runServer = function (port) {
             }
         });
 
-
+        res.end();
 
 
     });
@@ -785,14 +953,12 @@ workstation.prototype.loadpen = function () {
         };
     }
     //Print the result of the HTTP POST request
-    request(options, function (err, res, body) {
+    request(options, function (err) {
 
         if (err) {
             console.log('Error loading pen', err);
         }
-        else {
-            console.log(body);
-        }
+
 
     });
     console.log('Robot ' + ref.wsnumber +' Pen Colour '  + ref.capability + ' loaded');
@@ -815,7 +981,7 @@ var ws12 = new workstation(12,  'red');
 
 
 //HANDLES SUBMIT AFTER MAKING ORDER
-app.get('/submit', function(){
+app.get('/submit', function(res){
 var rows_;
 countdown.reset();
     countdown.start();
@@ -845,11 +1011,18 @@ countdown.reset();
                         else if(error){
                             console.log(error);
                         }
-
                     })
                 }
-
             }
+
+        setTimeout(function(){
+            request.post('http://localhost:5001/load');
+
+        },2000);
+
+
+
+
         for (rows_ = 0; rows_ < rows.length; rows_++) {
             connection.query("UPDATE Products SET Status = 'processed' WHERE ProductID = ?", rows[0].ProductID, function(){
                 console.log('Rows updated Successfully');
@@ -870,7 +1043,7 @@ countdown.reset();
         // //     console.log('requesting to release pallet . .')
         // // })
     });
-
+res.end()
 
 });
 
@@ -893,12 +1066,12 @@ workstation.prototype.transzone = function (zone1,zone2) {
     };
 
     //Print the result of the HTTP POST request
-    request(options, function (err, res, body) {
+    request(options, function (err) {
         if (err) {
             console.log('Error requesting to transfer zone in ' + ref.wsnumber, err);
         }
         else {
-            console.log(body);
+
             console.log('Requested to Transfer from ' + zone1 + 'to' + zone2 + 'in workstation ' + ref.wsnumber);
             // res.end();
         }
@@ -920,7 +1093,7 @@ function subscriptions() {
     var flag=0;
     request.post('http://localhost:3000/RTU/SimROB7/events/PalletLoaded/notifs', {form: {destUrl: "http://localhost:6007/notifs/7"}}, function (err) {if (err) {flag=1;} else{ console.log('subscribed to pallet load');}});
     request.post('http://localhost:3000/RTU/SimROB1/events/PaperLoaded/notifs', {form: {destUrl: "http://localhost:6001/notifs/paperloaded"}}, function (err) {if (err) {flag=1;}});
-
+    request.post('	http://localhost:3000/RTU/ROB7/events/PalletUnloaded/notifs', {form: {destUrl: "http://localhost:6007/notifs/7"}}, function (err) {if (err) {flag=1;}});
 }
 
 
