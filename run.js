@@ -88,7 +88,7 @@ var workstation= function (wsnumber, capability) {
     this.port  = 1234;
     this.url = "127.0.0.1";
     this.buffer = 'free';
-    this.status = 'busy';
+    this.status = 'free';
     // if(!((wsnumber == 1)||(wsnumber == 7))) {
     //     this.loadpen(wsnumber, capability);
     // }
@@ -166,7 +166,7 @@ var ref =this;
 
         case 1:
             if(pallet[index].currentneed_ == 'paper') {
-                var options = {
+                var options4 = {
                     method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
                     body: {"destUrl": "http://127.0.0.1"}, // Javascript object
                     json: true,
@@ -176,7 +176,7 @@ var ref =this;
                     }
                 };
                 //Print the result of the HTTP POST request
-                request(options, function (err) {
+                request(options4, function (err) {
                     if (err) {
                         console.log('Error Loading Paper');
                     }
@@ -188,7 +188,10 @@ var ref =this;
                     }
                 });
             }
-            else ref.transzone(3,5);
+            else
+            {
+                ref.transzone(3,5);
+            }
             break;
 
         case 7:     //INSERT CODE FOR WORKSTATION 7
@@ -332,6 +335,7 @@ workstation.prototype.runServer = function (port) {
 
 
                       if ((req.body.payload.PalletID != -1)) { //If new pallet is introduced and not leaving (as we receive notifications for both)
+                          ref1.zone1 = true;
                           console.log('\n\n~~~~~~~~~~Z1 CHANGED OF WORKSTATION'+ ref1.wsnumber + '~~~~~~~~~~');
                           console.log(pallet);
                           console.log('Pallet Size', pallet.length);
@@ -355,58 +359,304 @@ workstation.prototype.runServer = function (port) {
 
                               case "SimCNV1":
 
-                                  console.log('Current need of Pallet is ', pallet[index1].currentneed());
-                                  console.log(pallet);
-                                  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
-                                      var obj = JSON.parse(res.body);
-                                      var present = obj.v;
-                                      if (!present) {
+                                  if(ref1.buffer == 'free'){
+
+                                      setTimeout(function () {
+                                          ref1.transzone(1, 2);
+                                      }, 1000);
+                                  }
+
+                                  break;
+
+                              case "SimCNV2":
+
+                                  //CHECKING IF THE CURRENT WORKSTATION IS CAPABLE OF SERVING
+                                  if(ref1.capability == pallet[index1].currentneed_) {
+                                      //CHECKING IF THE WORKSTATION IS  FREE
+                                      if(ref1.status == 'free'){
                                           setTimeout(function () {
                                               ref1.transzone(1, 2);
                                           }, 1000);
-                                      }
-                                      else {
-                                          //write code to wait for 10 seconds and then push from Z1->Z2 (ABOVE CODE)
-                                      }
-                                  });
 
+                                      }
+                                      //IF WORKSTATION IS NOT FREE
+                                      else{
+                                          //CHECKING IF THERE ARE OTHER WORKSTATIONS WITH THE CAPABILITY THAT IS FREE
+                                          if((ws5.status == 'free')||(ws9.status == 'free')||(ws12.status == 'free')){
+                                              setTimeout(function () {
+                                                  ref1.transzone(1, 4);
+                                              }, 1000);
+                                          }
+                                          //IF NO OTHER WORKSTATIONS WITH THE CAPABILITY ARE FREE
+                                          else {
+                                              // CHECKING IF THE BUFFER OS THE CURRENT WORKSTATION IS FREE
+                                              if(ref1.buffer == 'free'){
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 2);
+                                                  }, 1000);
+
+                                              }
+                                              //IF THE BUFFER OF THE CURRENT WORKSTATION IS NOT FREE
+                                              else{
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 4);
+                                                  }, 1000);
+                                              }
+                                          }
+                                      }
+                                  }
+                                  //IF CURRENT WORKSTATION IS NOT CAPABLE OF SERVING
+                                  else{
+
+                                      setTimeout(function () {
+                                          ref1.transzone(1, 4);
+                                      }, 1000);
+
+
+                                  }
+                                  break;
+                              case "SimCNV3":
+
+                                  //CHECKING IF THE CURRENT WORKSTATION IS CAPABLE OF SERVING
+                                  if(ref1.capability == pallet[index1].currentneed_) {
+                                      //CHECKING IF THE WORKSTATION IS  FREE
+                                      if(ref1.status == 'free'){
+                                          setTimeout(function () {
+                                              ref1.transzone(1, 2);
+                                          }, 1000);
+
+                                      }
+                                      //IF WORKSTATION IS NOT FREE
+                                      else{
+                                          //CHECKING IF THERE ARE OTHER WORKSTATIONS WITH THE CAPABILITY THAT IS FREE
+                                          if((ws6.status == 'free')||(ws10.status == 'free')){
+                                              setTimeout(function () {
+                                                  ref1.transzone(1, 4);
+                                              }, 1000);
+                                          }
+                                          //IF NO OTHER WORKSTATIONS WITH THE CAPABILITY ARE FREE
+                                          else {
+                                              // CHECKING IF THE BUFFER OS THE CURRENT WORKSTATION IS FREE
+                                              if(ref1.buffer == 'free'){
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 2);
+                                                  }, 1000);
+
+                                              }
+                                              //IF THE BUFFER OF THE CURRENT WORKSTATION IS NOT FREE
+                                              else{
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 4);
+                                                  }, 1000);
+                                              }
+                                          }
+                                      }
+                                  }
+                                  //IF CURRENT WORKSTATION IS NOT CAPABLE OF SERVING
+                                  else{
+
+                                      setTimeout(function () {
+                                          ref1.transzone(1, 4);
+                                      }, 1000);
+
+
+                                  }
+                                  break;
+                              case "SimCNV4":
+                                  //CHECKING IF THE CURRENT WORKSTATION IS CAPABLE OF SERVING
+                                  if(ref1.capability == pallet[index1].currentneed_) {
+                                      //CHECKING IF THE WORKSTATION IS  FREE
+                                      if(ref1.status == 'free'){
+                                          setTimeout(function () {
+                                              ref1.transzone(1, 2);
+                                          }, 1000);
+
+                                      }
+                                      //IF WORKSTATION IS NOT FREE
+                                      else{
+                                          //CHECKING IF THERE ARE OTHER WORKSTATIONS WITH THE CAPABILITY THAT IS FREE
+                                          if((ws8.status == 'free')||(ws11.status == 'free')){
+                                              setTimeout(function () {
+                                                  ref1.transzone(1, 4);
+                                              }, 1000);
+                                          }
+                                          //IF NO OTHER WORKSTATIONS WITH THE CAPABILITY ARE FREE
+                                          else {
+                                              // CHECKING IF THE BUFFER OS THE CURRENT WORKSTATION IS FREE
+                                              if(ref1.buffer == 'free'){
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 2);
+                                                  }, 1000);
+
+                                              }
+                                              //IF THE BUFFER OF THE CURRENT WORKSTATION IS NOT FREE
+                                              else{
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 4);
+                                                  }, 1000);
+                                              }
+                                          }
+                                      }
+                                  }
+                                  //IF CURRENT WORKSTATION IS NOT CAPABLE OF SERVING
+                                  else{
+
+                                      setTimeout(function () {
+                                          ref1.transzone(1, 4);
+                                      }, 1000);
+                                  }
+
+                                  break;
+                              case "SimCNV5":
+                                  //CHECKING IF THE CURRENT WORKSTATION IS CAPABLE OF SERVING
+                                  if(ref1.capability == pallet[index1].currentneed_) {
+                                      //CHECKING IF THE WORKSTATION IS  FREE
+                                      if(ref1.status == 'free'){
+                                          setTimeout(function () {
+                                              ref1.transzone(1, 2);
+                                          }, 1000);
+
+                                      }
+                                      //IF WORKSTATION IS NOT FREE
+                                      else{
+                                          //CHECKING IF THERE ARE OTHER WORKSTATIONS WITH THE CAPABILITY THAT IS FREE
+                                          if((ws9.status == 'free')||(ws12.status == 'free')){
+                                              setTimeout(function () {
+                                                  ref1.transzone(1, 4);
+                                              }, 1000);
+                                          }
+                                          //IF NO OTHER WORKSTATIONS WITH THE CAPABILITY ARE FREE
+                                          else {
+                                              // CHECKING IF THE BUFFER OS THE CURRENT WORKSTATION IS FREE
+                                              if(ref1.buffer == 'free'){
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 2);
+                                                  }, 1000);
+
+                                              }
+                                              //IF THE BUFFER OF THE CURRENT WORKSTATION IS NOT FREE
+                                              else{
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 4);
+                                                  }, 1000);
+                                              }
+                                          }
+                                      }
+                                  }
+                                  //IF CURRENT WORKSTATION IS NOT CAPABLE OF SERVING
+                                  else{
+
+                                      setTimeout(function () {
+                                          ref1.transzone(1, 4);
+                                      }, 1000);
+                                  }
+
+                                  break;
+
+                              case "SimCNV6":
+                                  //CHECKING IF THE CURRENT WORKSTATION IS CAPABLE OF SERVING
+                                  if(ref1.capability == pallet[index1].currentneed_) {
+                                      //CHECKING IF THE WORKSTATION IS  FREE
+                                      if(ref1.status == 'free'){
+                                          setTimeout(function () {
+                                              ref1.transzone(1, 2);
+                                          }, 1000);
+
+                                      }
+                                      //IF WORKSTATION IS NOT FREE
+                                      else{
+                                          //CHECKING IF THERE ARE OTHER WORKSTATIONS WITH THE CAPABILITY THAT IS FREE
+                                          if((ws10.status == 'free')){
+                                              setTimeout(function () {
+                                                  ref1.transzone(1, 4);
+                                              }, 1000);
+                                          }
+                                          //IF NO OTHER WORKSTATIONS WITH THE CAPABILITY ARE FREE
+                                          else {
+                                              // CHECKING IF THE BUFFER OS THE CURRENT WORKSTATION IS FREE
+                                              if(ref1.buffer == 'free'){
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 2);
+                                                  }, 1000);
+
+                                              }
+                                              //IF THE BUFFER OF THE CURRENT WORKSTATION IS NOT FREE
+                                              else{
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 4);
+                                                  }, 1000);
+                                              }
+                                          }
+                                      }
+                                  }
+                                  //IF CURRENT WORKSTATION IS NOT CAPABLE OF SERVING
+                                  else{
+
+                                      setTimeout(function () {
+                                          ref1.transzone(1, 4);
+                                      }, 1000);
+                                  }
 
                                   break;
 
                               case "SimCNV7":
-                                  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
-                                      var obj = JSON.parse(res.body);
-                                      var present = obj.v;
-                                      if(!present){
-                                          ref1.transzone(1,2);
-                                      }
-                                  });
+                                  setTimeout(function () {
+                                      ref1.transzone(1, 2);
+                                  }, 1000);
 
                                   break;
 
                               case "SimCNV8":
-                                  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
-                                      var obj = JSON.parse(res.body);
-                                      var present = obj.v;
-                                      console.log('Current Status of zone 2 of workstation ' + ref1.wsnumber);
-                                      console.log(present);
-                                      if((!(present))&&((ref1.capability == pallet[index1].currentneed()))){
-                                          setTimeout(function () {
-                                              ref1.transzone(1, 2);
-                                          }, 1000);
+
+                                        //CHECKING IF THE CURRENT WORKSTATION IS CAPABLE OF SERVING
+                                      if(ref1.capability == pallet[index1].currentneed_) {
+                                            //CHECKING IF THE WORKSTATION IS  FREE
+                                          if(ref1.status == 'free'){
+                                              setTimeout(function () {
+                                                  ref1.transzone(1, 2);
+                                              }, 1000);
+
+                                          }
+                                          //IF WORKSTATION IS NOT FREE
+                                          else{
+                                              //CHECKING IF THERE ARE OTHER WORKSTATIONS WITH THE CAPABILITY THAT IS FREE
+                                              if(ws11.status == 'free'){
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 4);
+                                                  }, 1000);
+                                              }
+                                              //IF NO OTHER WORKSTATIONS WITH THE CAPABILITY ARE FREE
+                                              else {
+                                                  // CHECKING IF THE BUFFER OS THE CURRENT WORKSTATION IS FREE
+                                                  if(ref1.buffer == 'free'){
+                                                      setTimeout(function () {
+                                                          ref1.transzone(1, 2);
+                                                      }, 1000);
+
+                                                  }
+                                                  //IF THE BUFFER OF THE CURRENT WORKSTATION IS NOT FREE
+                                                  else{
+                                                      setTimeout(function () {
+                                                          ref1.transzone(1, 4);
+                                                      }, 1000);
+                                                  }
+                                              }
+                                          }
                                       }
-                                      else {
+                                        //IF CURRENT WORKSTATION IS NOT CAPABLE OF SERVING
+                                      else{
+
                                           setTimeout(function () {
                                               ref1.transzone(1, 4);
                                           }, 1000);
+
+
                                       }
-                                  });
 
                                   //IF ZONE 1 OF WORKSTATION 8 OCCURS AND THERE IS NO PALLET PRESENT IN ZONE 2 OF WORKSTATION 7
-                                  request.get("http://localhost:3000/RTU/SimCNV7/data/P2", function (req, res) {
-                                      var obj = JSON.parse(res.body);
-                                      var present = obj.v;
-                                      if(!present) {
+
+
+                                      if(ws7.buffer == 'free') {
                                           connection.query("SELECT * FROM Pallets where Status = 'in_queue'", function (results, rows) {
 
                                               if (rows.length == 0) {
@@ -438,57 +688,198 @@ workstation.prototype.runServer = function (port) {
 
                                           });
                                       }
-                                  });
-
 
                                   break;
-                              case "SimCNV2":
-                              case "SimCNV3":
-                              case "SimCNV4":
-                              case "SimCNV5":
-                              case "SimCNV6":
+
                               case "SimCNV9":
-                              case "SimCNV10":
-                              case "SimCNV11":
-                              case "SimCNV12":
-
-
-                                //  request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
-                                  //    var obj = JSON.parse(res.body);
-                                  //    var present = obj.v;
-//                                 //     console.log(present);
-                                      if((ref1.capability == pallet[index1].currentneed())){
+                                  //CHECKING IF THE CURRENT WORKSTATION IS CAPABLE OF SERVING
+                                  if(ref1.capability == pallet[index1].currentneed_) {
+                                      //CHECKING IF THE WORKSTATION IS  FREE
+                                      if(ref1.status == 'free'){
                                           setTimeout(function () {
                                               ref1.transzone(1, 2);
                                           }, 1000);
-                                      }
-                                      else {
-                                          setTimeout(function () {
-                                              ref1.transzone(1, 4);
-                                          }, 1000);
-                                      }
 
+                                      }
+                                      //IF WORKSTATION IS NOT FREE
+                                      else{
+                                          //CHECKING IF THERE ARE OTHER WORKSTATIONS WITH THE CAPABILITY THAT IS FREE
+                                          if((ws12.status == 'free')){
+                                              setTimeout(function () {
+                                                  ref1.transzone(1, 4);
+                                              }, 1000);
+                                          }
+                                          //IF NO OTHER WORKSTATIONS WITH THE CAPABILITY ARE FREE
+                                          else {
+                                              // CHECKING IF THE BUFFER OS THE CURRENT WORKSTATION IS FREE
+                                              if(ref1.buffer == 'free'){
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 2);
+                                                  }, 1000);
+
+                                              }
+                                              //IF THE BUFFER OF THE CURRENT WORKSTATION IS NOT FREE
+                                              else{
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 4);
+                                                  }, 1000);
+                                              }
+                                          }
+                                      }
+                                  }
+                                  //IF CURRENT WORKSTATION IS NOT CAPABLE OF SERVING
+                                  else{
+
+                                      setTimeout(function () {
+                                          ref1.transzone(1, 4);
+                                      }, 1000);
+
+
+                                  }
+
+                                  break;
+                              case "SimCNV10":
+                                  //CHECKING IF THE CURRENT WORKSTATION IS CAPABLE OF SERVING
+                                  if(ref1.capability == pallet[index1].currentneed_) {
+                                      //CHECKING IF THE WORKSTATION IS  FREE
+                                      if(ref1.status == 'free'){
+                                          setTimeout(function () {
+                                              ref1.transzone(1, 2);
+                                          }, 1000);
+
+                                      }
+                                      //IF WORKSTATION IS NOT FREE
+                                      else{
+                                          // CHECKING IF THE BUFFER OS THE CURRENT WORKSTATION IS FREE
+                                              if(ref1.buffer == 'free'){
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 2);
+                                                  }, 1000);
+
+                                              }
+                                              //IF THE BUFFER OF THE CURRENT WORKSTATION IS NOT FREE
+                                              else{
+                                                  setTimeout(function () {
+                                                      ref1.transzone(1, 4);
+                                                  }, 1000);
+                                              }
+                                          }
+                                      }
+                                  //IF CURRENT WORKSTATION IS NOT CAPABLE OF SERVING
+                                  else{
+
+                                      setTimeout(function () {
+                                          ref1.transzone(1, 4);
+                                      }, 1000);
+
+                                  }
+
+                                  break;
+                              case "SimCNV11":
+                                  //CHECKING IF THE CURRENT WORKSTATION IS CAPABLE OF SERVING
+                                  if(ref1.capability == pallet[index1].currentneed_) {
+                                      //CHECKING IF THE WORKSTATION IS  FREE
+                                      if(ref1.status == 'free'){
+                                          setTimeout(function () {
+                                              ref1.transzone(1, 2);
+                                          }, 1000);
+
+                                      }
+                                      //IF WORKSTATION IS NOT FREE
+                                      else{
+                                          // CHECKING IF THE BUFFER OS THE CURRENT WORKSTATION IS FREE
+                                          if(ref1.buffer == 'free'){
+                                              setTimeout(function () {
+                                                  ref1.transzone(1, 2);
+                                              }, 1000);
+
+                                          }
+                                          //IF THE BUFFER OF THE CURRENT WORKSTATION IS NOT FREE
+                                          else{
+                                              setTimeout(function () {
+                                                  ref1.transzone(1, 4);
+                                              }, 1000);
+                                          }
+                                      }
+                                  }
+                                  //IF CURRENT WORKSTATION IS NOT CAPABLE OF SERVING
+                                  else{
+
+                                      setTimeout(function () {
+                                          ref1.transzone(1, 4);
+                                      }, 1000);
+
+                                  }
+
+                                  break;
+
+                              case "SimCNV12":
+                                  //CHECKING IF THE CURRENT WORKSTATION IS CAPABLE OF SERVING
+                                  if(ref1.capability == pallet[index1].currentneed_) {
+                                      //CHECKING IF THE WORKSTATION IS  FREE
+                                      if(ref1.status == 'free'){
+                                          setTimeout(function () {
+                                              ref1.transzone(1, 2);
+                                          }, 1000);
+
+                                      }
+                                      //IF WORKSTATION IS NOT FREE
+                                      else{
+                                          // CHECKING IF THE BUFFER OS THE CURRENT WORKSTATION IS FREE
+                                          if(ref1.buffer == 'free'){
+                                              setTimeout(function () {
+                                                  ref1.transzone(1, 2);
+                                              }, 1000);
+
+                                          }
+                                          //IF THE BUFFER OF THE CURRENT WORKSTATION IS NOT FREE
+                                          else{
+                                              setTimeout(function () {
+                                                  ref1.transzone(1, 4);
+                                              }, 1000);
+                                          }
+                                      }
+                                  }
+                                  //IF CURRENT WORKSTATION IS NOT CAPABLE OF SERVING
+                                  else{
+
+                                      setTimeout(function () {
+                                          ref1.transzone(1, 4);
+                                      }, 1000);
+
+                                  }
 
                                   break;
                           }
                       }
+                        if ((req.body.payload.PalletID == -1)) {
+                          ref1.zone1 = false;
+
+                        }
+
                         res.end();
                         break;
 
                     case "Z2_Changed":
 
                         if ((req.body.payload.PalletID != -1)) {
+                            ref1.buffer = 'occupied';
                             console.log('\n\n~~~~~~~~~~Z2 CHANGED OF WORKSTATION'+ ref1.wsnumber + '~~~~~~~~~~');
                             console.log('Pallet Size', pallet.length);
                             console.log(pallet);
 
                             switch (req.body.senderID) {
 
-                                case"SimCNV7":
-                                        ref1.transzone(2,3);
-                                    break;
 
                                 case "SimCNV1":
+                                case"SimCNV7":
+                                    if(ref1.status == 'free') {
+                                        setTimeout(function () {
+                                            ref1.transzone(2, 3);
+                                        }, 1000);
+                                    }
+                                    break;
+
                                 case "SimCNV2":
                                 case "SimCNV3":
                                 case "SimCNV4":
@@ -500,34 +891,28 @@ workstation.prototype.runServer = function (port) {
                                 case "SimCNV11":
                                 case "SimCNV12":
 
+                                    if(ref1.status != 'busy'){
+                                        setTimeout(function () {
+                                            ref1.transzone(2, 3);
+                                        }, 1000);
+                                    }
 
-                                    request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P3", function (req, res) {
-                                        var obj = JSON.parse(res.body);
-                                        var present = obj.v;
-                                        if (!present) {
-                                            setTimeout(function () {
-                                                //insert code to check if 3 is free
-                                                ref1.transzone(2, 3);
-                                            }, 1000);
-                                        }
-                                        else {
-
-                                            //  write code to wait for 10 seconds and then push from Z2->Z3 (ABOVE CODE)
-                                        }
-                                    });
                                     break;
                             }
 
 
                         }
                         if ((req.body.payload.PalletID == -1)) {
+                            ref1.buffer = 'free';
                             switch (req.body.senderID) {
                                 case "SimCNV1":
+                                case "SimCNV7":
                                     request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P1", function (req, res) {
                                         var obj = JSON.parse(res.body);
                                         var present = obj.v;
                                     if(present){
-                                        ref1.transzone(1,2);
+                                        setTimeout(function () {ref1.transzone(1,2);
+                                        }, 1000);
                                     }
 
                                     });
@@ -547,6 +932,7 @@ workstation.prototype.runServer = function (port) {
                                 console.log(pallet);
                                 console.log('Pallet Size', pallet.length);
                                 var index3;
+                                ref1.status = 'busy';
 
                                 var palletID3 = req.body.payload.PalletID;
                                 for (var i = 0; i < pallet.length; i++) {
@@ -586,15 +972,14 @@ workstation.prototype.runServer = function (port) {
                                            }
 
                                            else {
-                                               ref1.transzone(3,5);
+                                               setTimeout(function () {
+                                                   ref1.transzone(3, 5);
+                                               }, 1000);
 
                                            }
                                         break;
 
                                     case "SimCNV1":
-                                        setTimeout(function() {
-                                        },1000);
-
                                     case "SimCNV2":
                                     case "SimCNV3":
                                     case "SimCNV4":
@@ -611,23 +996,17 @@ workstation.prototype.runServer = function (port) {
 
                                         break;
                                 }
-
                             }
 
-                        if (req.body.payload.PalletID == -1) {
-                            request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P2", function (req, res) {
-                                var obj = JSON.parse(res.body);
-                                var present = obj.v;
-                                if (present) {
+                            else if (req.body.payload.PalletID == -1) {
+                                ref1.status = 'free';
+
+                                if (ref1.buffer == 'occupied') {
                                     setTimeout(function() {
                                     ref1.transzone(2, 3)
-                                    },1000);
+                                    },1500);
                                 }
-
-                            });
-
                         }
-
                         // res.writeHead(202);
                         res.end();
 
@@ -638,59 +1017,61 @@ workstation.prototype.runServer = function (port) {
 
 
                         if ((req.body.payload.PalletID != -1)) {
-                            // ref1.zone4 = true;
 
-
-                         //   if(ref1.zone5 == false) { //CHECK ALSO IF THERE ISNT ANYTHING AT ZONE 5 NOT ONLY SHARED    !!!!!!!!!!!!!!!!!!!!!!!
-
-                                // setTimeout(function () {
-
-                                   if(ref1.flag == false){
+                                   if((ref1.flag == false)&&(ref1.zone5 == false)){
                                        ref1.transzone(4, 5);
                                    }
-                                //
-                                // }, 1000);
-                            // }
-                           //  else {
-                           //      //  write code to wait for 5 seconds and then push from Z4->Z5 (ABOVE CODE)
-                           //  }
-
                         }
 
-                        else if ((req.body.payload.PalletID == -1)) {
-                            // ref1.zone4 = false;
+                        else if ((req.body.payload.PalletID == -1)){
 
+                            if(ref1.zone1 == true){
+
+                                setTimeout(function () {
+                                    ref1.transzone(1, 4);
+                                }, 1500);
+
+                            }
 
                         }
-
 
 
                         res.end();
                         break;
 
                     case "Z5_Changed":
+                        if (req.body.payload.PalletID == -1) {
+                            ref1.zone5 = false;
+
+                        switch (req.body.senderID) {
+
+                            case "SimCNV2":
+                            case "SimCNV3":
+                            case "SimCNV4":
+                            case "SimCNV5":
+                            case "SimCNV6":
+                            case "SimCNV8":
+                            case "SimCNV9":
+                            case "SimCNV10":
+                            case "SimCNV11":
+                            case "SimCNV12":
+
+                                console.log(req.body);
 
 
-                        console.log(req.body);
-
-                       if (req.body.payload.PalletID == -1){
-                            ref1.flag = false;
-
-                            // request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P4", function (req, res, body) {
-                            //
-                            //     console.log("FOUND WAITING AT ZONE 4");
-                            //     var obj = JSON.parse(res.body);
-                            //     var present = obj.v;
-                            //     console.log(present);
-                            //     if (present) {
-                            setTimeout(function(){
-                                    ref1.transzone(4, 5);
-                            },1000);
-                            //     }
-                            //     });
-                            }
+                                    ref1.flag = false;
 
 
+                                    setTimeout(function () {
+                                        ref1.transzone(4, 5);
+                                    }, 1500);
+
+                                }
+                        }
+                        else if (req.body.payload.PalletID != -1) {
+                            ref1.zone5 = true;
+
+                        }
                         res.end();
 
                         break;
@@ -743,7 +1124,9 @@ workstation.prototype.runServer = function (port) {
                                 // setTimeout(function() {
                                 ref1.flag=true;
                                 //HANDLE FLAG
-                                ref1.transzone(3, 5);
+                                setTimeout(function () {
+                                    ref1.transzone(3, 5);
+                                }, 100);
 
                             }
                         // res.writeHead(202);
@@ -809,7 +1192,7 @@ workstation.prototype.runServer = function (port) {
                                     console.log('Initial Transfer Completed');
                                 }
                             });
-                        }, 2000);
+                        }, 1000);
                         // res.writeHead(202);
                         res.end();
                         break;
@@ -874,9 +1257,9 @@ workstation.prototype.runServer = function (port) {
             var present = obj.v;
             console.log('PRESENT VALUE IS~~~~~~~~~', present);
             if (!present) {
-                // setTimeout(function() {
+
                     ref1.transzone(3, 5);
-                // },1000);
+
             }
 
             if (present){
