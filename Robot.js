@@ -42,270 +42,290 @@ robot.prototype.runServer = function (port) {
 
         // var ref = this;
         console.log(req.body);
-        // switch (req.body.SenderID) {
 
-        //  case 'SimCNV8' || 'SimCNV9' || 'SimCNV10' || 'SimCNV11' || 'SimCNV12' || 'SimCNV2' || 'SimCNV3' || 'SimCNV4' || 'SimCNV5' || 'SimCNV6':
 
         switch (req.body.id){
 
-            // case "Z1_Changed":
-            //
-            //
-            //     if ((req.body.payload.PalletID != -1)) { //If new pallet is introduced and not leaving (as we receive notifications for both)
-            //         ref1.zone1 = true;
-            //
-            //
-            //
-            //         switch (req.body.senderID) {
-            //
-            //             case "SimCNV1":
-            //
-            //                 if(ref1.buffer == 'free'){
-            //
-            //
-            //                 }
-            //
-            //                 break;
-            //
-            //             case "SimCNV2":
-            //
-            //                 //CHECKING IF THE CURRENT ROBOT IS CAPABLE OF SERVING
-            //                 if(ref1.capability == pallet[index1].currentneed_) {
-            //                     //CHECKING IF THE ROBOT IS  FREE
-            //                     if(ref1.status == 'free'){
-            //
-            //
-            //                     }
-            //                     //IF ROBOT IS NOT FREE
-            //                     else{
-            //                         //CHECKING IF THERE ARE OTHER ROBOTS WITH THE CAPABILITY THAT IS FREE
-            //                         if((ws5.status == 'free')||(ws9.status == 'free')||(ws12.status == 'free')){
-            //
-            //                         }
-            //                         //IF NO OTHER ROBOTS WITH THE CAPABILITY ARE FREE
-            //                         else {
-            //                             // CHECKING IF THE BUFFER OS THE CURRENT ROBOT IS FREE
-            //                             if(ref1.buffer == 'free'){
-            //
-            //
-            //                             }
-            //                             //IF THE BUFFER OF THE CURRENT ROBOT IS NOT FREE
-            //                             else{
-            //
-            //                             }
-            //                         }
-            //                     }
-            //                 }
-            //                 //IF CURRENT ROBOT IS NOT CAPABLE OF SERVING
-            //                 else{
-            //
-            //                 }
-            //                 break;
-            //             case "SimCNV3":
-            //
-            //                 if(ref1.capability == pallet[index1].currentneed_) {
-            //                     //CHECKING IF THE ROBOT IS  FREE
-            //                     if(ref1.status == 'free'){
-            //
-            //
-            //                     }
-            //                     //IF ROBOT IS NOT FREE
-            //                     else{
-            //                         //CHECKING IF THERE ARE OTHER ROBOTS WITH THE CAPABILITY THAT IS FREE
-            //                         if((ws5.status == 'free')||(ws9.status == 'free')||(ws12.status == 'free')){
-            //
-            //                         }
-            //                         //IF NO OTHER ROBOTS WITH THE CAPABILITY ARE FREE
-            //                         else {
-            //                             // CHECKING IF THE BUFFER OS THE CURRENT ROBOT IS FREE
-            //                             if(ref1.buffer == 'free'){
-            //
-            //
-            //                             }
-            //                             //IF THE BUFFER OF THE CURRENT ROBOT IS NOT FREE
-            //                             else{
-            //
-            //                             }
-            //                         }
-            //                     }
-            //                 }
-            //                 //IF CURRENT ROBOT IS NOT CAPABLE OF SERVING
-            //                 else{
-            //
-            //                 }
-            //                 break;
-            //             case "SimCNV4":
-            //                 if(ref1.capability == pallet[index1].currentneed_) {
-            //                     //CHECKING IF THE ROBOT IS  FREE
-            //                     if(ref1.status == 'free'){
-            //
-            //
-            //                     }
-            //                     //IF ROBOT IS NOT FREE
-            //                     else{
-            //                         //CHECKING IF THERE ARE OTHER ROBOTS WITH THE CAPABILITY THAT IS FREE
-            //                         if((ws5.status == 'free')||(ws9.status == 'free')||(ws12.status == 'free')){
-            //
-            //                         }
-            //                         //IF NO OTHER ROBOTS WITH THE CAPABILITY ARE FREE
-            //                         else {
-            //                             // CHECKING IF THE BUFFER OS THE CURRENT ROBOT IS FREE
-            //                             if(ref1.buffer == 'free'){
-            //
-            //
-            //                             }
-            //                             //IF THE BUFFER OF THE CURRENT ROBOT IS NOT FREE
-            //                             else{
-            //
-            //                             }
-            //                         }
-            //                     }
-            //                 }
-            //                 //IF CURRENT ROBOT IS NOT CAPABLE OF SERVING
-            //                 else{
-            //
-            //                 }
-            //                 break;
-            //             case "SimCNV5": if(ref1.capability == pallet[index1].currentneed_) {
-            //                 //CHECKING IF THE ROBOT IS  FREE
-            //                 if(ref1.status == 'free'){
-            //
-            //
-            //                 }
-            //                 //IF ROBOT IS NOT FREE
-            //                 else{
-            //                     //CHECKING IF THERE ARE OTHER ROBOTS WITH THE CAPABILITY THAT IS FREE
-            //                     if((ws5.status == 'free')||(ws9.status == 'free')||(ws12.status == 'free')){
-            //
-            //                     }
-            //                     //IF NO OTHER ROBOTS WITH THE CAPABILITY ARE FREE
-            //                     else {
-            //                         // CHECKING IF THE BUFFER OS THE CURRENT ROBOT IS FREE
-            //                         if(ref1.buffer == 'free'){
-            //
-            //
-            //                         }
-            //                         //IF THE BUFFER OF THE CURRENT ROBOT IS NOT FREE
-            //                         else{
-            //
-            //                         }
-            //                     }
-            //                 }
-            //             }
-            //             //IF CURRENT ROBOT IS NOT CAPABLE OF SERVING
-            //             else{
-            //
-            //             }
-            //                 break;
-            //             case "SimCNV6":
-            //                 //CHECKING IF THE CURRENT ROBOT IS CAPABLE OF SERVING
-            //                 if(ref1.capability == pallet[index1].currentneed_) {
-            //                     //CHECKING IF THE ROBOT IS  FREE
-            //                     if(ref1.status == 'free'){
-            //
-            //
-            //                     }
-            //                     //IF ROBOT IS NOT FREE
-            //                     else{
-            //                         //CHECKING IF THERE ARE OTHER ROBOTS WITH THE CAPABILITY THAT IS FREE
-            //                         if((ws5.status == 'free')||(ws9.status == 'free')||(ws12.status == 'free')){
-            //
-            //                         }
-            //                         //IF NO OTHER ROBOTS WITH THE CAPABILITY ARE FREE
-            //                         else {
-            //                             // CHECKING IF THE BUFFER OS THE CURRENT ROBOT IS FREE
-            //                             if(ref1.buffer == 'free'){
-            //
-            //
-            //                             }
-            //                             //IF THE BUFFER OF THE CURRENT ROBOT IS NOT FREE
-            //                             else{
-            //
-            //                             }
-            //                         }
-            //                     }
-            //                 }
-            //                 //IF CURRENT ROBOT IS NOT CAPABLE OF SERVING
-            //                 else{
-            //
-            //                 }
-            //                 break;
-            //                 break;
-            //
-            //             case "SimCNV7":
-            //
-            //                 break;
-            //
-            //             case "SimCNV8":
-            //
-            //                 if(ref1.capability == pallet[index1].currentneed_) {
-            //                     //CHECKING IF THE ROBOT IS  FREE
-            //                     if(ref1.status == 'free'){
-            //
-            //
-            //                     }
-            //                     //IF ROBOT IS NOT FREE
-            //                     else{
-            //                         //CHECKING IF THERE ARE OTHER ROBOTS WITH THE CAPABILITY THAT IS FREE
-            //                         if((ws5.status == 'free')||(ws9.status == 'free')||(ws12.status == 'free')){
-            //
-            //                         }
-            //                         //IF NO OTHER ROBOTS WITH THE CAPABILITY ARE FREE
-            //                         else {
-            //                             // CHECKING IF THE BUFFER OS THE CURRENT ROBOT IS FREE
-            //                             if(ref1.buffer == 'free'){
-            //
-            //
-            //                             }
-            //                             //IF THE BUFFER OF THE CURRENT ROBOT IS NOT FREE
-            //                             else{
-            //
-            //                             }
-            //                         }
-            //                     }
-            //                 }
-            //                 //IF CURRENT ROBOT IS NOT CAPABLE OF SERVING
-            //                 else{
-            //
-            //                 }
-            //
-            //                 //IF ZONE 1 OF ROBOT 8 OCCURS AND THERE IS NO PALLET PRESENT IN ZONE 2 OF ROBOT 7
-            //
-            //
-            //                 if(ws7.buffer == 'free') {
-            //                     connection.query("SELECT * FROM Pallets where Status = 'in_queue'", function (results, rows) {
-            //
-            //                         if (rows.length == 0) {
-            //                             console.log('No Pallets Ordered to Produce');
-            //                         }
-            //                         else {
-            //                             setTimeout(function () {
-            //                                 var options = {
-            //                                     method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+robnumber+"/services/ChangePenBLUE
-            //                                     body: {"destUrl": "http://127.0.0.1"}, // Javascript object
-            //                                     json: true,
-            //                                     url: "	http://localhost:3000/RTU/SimROB7/services/LoadPallet",
-            //                                     headers: {
-            //                                         'Content-Type': 'application/json'
-            //                                     }
-            //                                 };
-            //                                 //Print the result of the HTTP POST request
-            //                                 request(options, function (err) {
-            //                                     if (err) {
-            //                                         console.log('Error Loading Pallet');
-            //                                     }
-            //                                 });
-            //                                 connection.query("UPDATE Pallets SET Status = 'processed' WHERE ProductID = ?", rows[0].ProductID, function () {
-            //                                     console.log("Rows 'processed' Successfully");
-            //                                 });
-            //                             }, 2000);
-            //
-            //                         }
-            //
-            //                     });
-            //                 }
-            //
-            //                 break;
+            case "Z1_Changed":
+            //
+            //
+                if ((req.body.payload.PalletID != -1)) { //If new pallet is introduced and not leaving (as we receive notifications for both)
+                    //         ref1.zone1 = true;
+                    //
+                    var palletID1 = req.body.payload.PalletID;
+                    //
+                    //
+                    switch (req.body.senderID) {
+                        //
+                        //             case "SimCNV1":
+                        //
+                        //                 if(ref1.buffer == 'free'){
+                        //
+                        //
+                        //                 }
+                        //
+                        //                 break;
+                        //
+                        //             case "SimCNV2":
+                        //
+                        //                 //CHECKING IF THE CURRENT ROBOT IS CAPABLE OF SERVING
+                        //                 if(ref1.capability == pallet[index1].currentneed_) {
+                        //                     //CHECKING IF THE ROBOT IS  FREE
+                        //                     if(ref1.status == 'free'){
+                        //
+                        //
+                        //                     }
+                        //                     //IF ROBOT IS NOT FREE
+                        //                     else{
+                        //                         //CHECKING IF THERE ARE OTHER ROBOTS WITH THE CAPABILITY THAT IS FREE
+                        //                         if((ws5.status == 'free')||(ws9.status == 'free')||(ws12.status == 'free')){
+                        //
+                        //                         }
+                        //                         //IF NO OTHER ROBOTS WITH THE CAPABILITY ARE FREE
+                        //                         else {
+                        //                             // CHECKING IF THE BUFFER OS THE CURRENT ROBOT IS FREE
+                        //                             if(ref1.buffer == 'free'){
+                        //
+                        //
+                        //                             }
+                        //                             //IF THE BUFFER OF THE CURRENT ROBOT IS NOT FREE
+                        //                             else{
+                        //
+                        //                             }
+                        //                         }
+                        //                     }
+                        //                 }
+                        //                 //IF CURRENT ROBOT IS NOT CAPABLE OF SERVING
+                        //                 else{
+                        //
+                        //                 }
+                        //                 break;
+                        //             case "SimCNV3":
+                        //
+                        //                 if(ref1.capability == pallet[index1].currentneed_) {
+                        //                     //CHECKING IF THE ROBOT IS  FREE
+                        //                     if(ref1.status == 'free'){
+                        //
+                        //
+                        //                     }
+                        //                     //IF ROBOT IS NOT FREE
+                        //                     else{
+                        //                         //CHECKING IF THERE ARE OTHER ROBOTS WITH THE CAPABILITY THAT IS FREE
+                        //                         if((ws5.status == 'free')||(ws9.status == 'free')||(ws12.status == 'free')){
+                        //
+                        //                         }
+                        //                         //IF NO OTHER ROBOTS WITH THE CAPABILITY ARE FREE
+                        //                         else {
+                        //                             // CHECKING IF THE BUFFER OS THE CURRENT ROBOT IS FREE
+                        //                             if(ref1.buffer == 'free'){
+                        //
+                        //
+                        //                             }
+                        //                             //IF THE BUFFER OF THE CURRENT ROBOT IS NOT FREE
+                        //                             else{
+                        //
+                        //                             }
+                        //                         }
+                        //                     }
+                        //                 }
+                        //                 //IF CURRENT ROBOT IS NOT CAPABLE OF SERVING
+                        //                 else{
+                        //
+                        //                 }
+                        //                 break;
+                        //             case "SimCNV4":
+                        //                 if(ref1.capability == pallet[index1].currentneed_) {
+                        //                     //CHECKING IF THE ROBOT IS  FREE
+                        //                     if(ref1.status == 'free'){
+                        //
+                        //
+                        //                     }
+                        //                     //IF ROBOT IS NOT FREE
+                        //                     else{
+                        //                         //CHECKING IF THERE ARE OTHER ROBOTS WITH THE CAPABILITY THAT IS FREE
+                        //                         if((ws5.status == 'free')||(ws9.status == 'free')||(ws12.status == 'free')){
+                        //
+                        //                         }
+                        //                         //IF NO OTHER ROBOTS WITH THE CAPABILITY ARE FREE
+                        //                         else {
+                        //                             // CHECKING IF THE BUFFER OS THE CURRENT ROBOT IS FREE
+                        //                             if(ref1.buffer == 'free'){
+                        //
+                        //
+                        //                             }
+                        //                             //IF THE BUFFER OF THE CURRENT ROBOT IS NOT FREE
+                        //                             else{
+                        //
+                        //                             }
+                        //                         }
+                        //                     }
+                        //                 }
+                        //                 //IF CURRENT ROBOT IS NOT CAPABLE OF SERVING
+                        //                 else{
+                        //
+                        //                 }
+                        //                 break;
+                        //             case "SimCNV5": if(ref1.capability == pallet[index1].currentneed_) {
+                        //                 //CHECKING IF THE ROBOT IS  FREE
+                        //                 if(ref1.status == 'free'){
+                        //
+                        //
+                        //                 }
+                        //                 //IF ROBOT IS NOT FREE
+                        //                 else{
+                        //                     //CHECKING IF THERE ARE OTHER ROBOTS WITH THE CAPABILITY THAT IS FREE
+                        //                     if((ws5.status == 'free')||(ws9.status == 'free')||(ws12.status == 'free')){
+                        //
+                        //                     }
+                        //                     //IF NO OTHER ROBOTS WITH THE CAPABILITY ARE FREE
+                        //                     else {
+                        //                         // CHECKING IF THE BUFFER OS THE CURRENT ROBOT IS FREE
+                        //                         if(ref1.buffer == 'free'){
+                        //
+                        //
+                        //                         }
+                        //                         //IF THE BUFFER OF THE CURRENT ROBOT IS NOT FREE
+                        //                         else{
+                        //
+                        //                         }
+                        //                     }
+                        //                 }
+                        //             }
+                        //             //IF CURRENT ROBOT IS NOT CAPABLE OF SERVING
+                        //             else{
+                        //
+                        //             }
+                        //                 break;
+                        //             case "SimCNV6":
+                        //                 //CHECKING IF THE CURRENT ROBOT IS CAPABLE OF SERVING
+                        //                 if(ref1.capability == pallet[index1].currentneed_) {
+                        //                     //CHECKING IF THE ROBOT IS  FREE
+                        //                     if(ref1.status == 'free'){
+                        //
+                        //
+                        //                     }
+                        //                     //IF ROBOT IS NOT FREE
+                        //                     else{
+                        //                         //CHECKING IF THERE ARE OTHER ROBOTS WITH THE CAPABILITY THAT IS FREE
+                        //                         if((ws5.status == 'free')||(ws9.status == 'free')||(ws12.status == 'free')){
+                        //
+                        //                         }
+                        //                         //IF NO OTHER ROBOTS WITH THE CAPABILITY ARE FREE
+                        //                         else {
+                        //                             // CHECKING IF THE BUFFER OS THE CURRENT ROBOT IS FREE
+                        //                             if(ref1.buffer == 'free'){
+                        //
+                        //
+                        //                             }
+                        //                             //IF THE BUFFER OF THE CURRENT ROBOT IS NOT FREE
+                        //                             else{
+                        //
+                        //                             }
+                        //                         }
+                        //                     }
+                        //                 }
+                        //                 //IF CURRENT ROBOT IS NOT CAPABLE OF SERVING
+                        //                 else{
+                        //
+                        //                 }
+                        //                 break;
+                        //                 break;
+                        //
+                        //             case "SimCNV7":
+                        //
+                        //                 break;
+                        //
+                        case "SimCNV8":
+
+                            options = {
+                                uri: 'http://localhost:70'+ws+'/notifs/' + ws,
+                                method: 'POST',
+                                json: true,
+                                body: {
+                                    "id": "currentneed",
+                                    "payload": {
+                                        "palletID": palletID1
+                                    }
+                                }
+                            };
+                            request(options, function (error, response, body) {
+                                if (!error) {
+                                    console.log('Requested Conveyor to Transfer Zones');
+                                }
+
+                            });
+
+
+                            if (ref1.capability == pallet[index1].currentneed_) {
+                                //CHECKING IF THE ROBOT IS  FREE
+                                if (ref1.status == 'free') {
+
+
+                                }
+                                //IF ROBOT IS NOT FREE
+                                else {
+                                    //CHECKING IF THERE ARE OTHER ROBOTS WITH THE CAPABILITY THAT IS FREE
+                                    if ((ws5.status == 'free') || (ws9.status == 'free') || (ws12.status == 'free')) {
+
+                                    }
+                                    //IF NO OTHER ROBOTS WITH THE CAPABILITY ARE FREE
+                                    else {
+                                        // CHECKING IF THE BUFFER OS THE CURRENT ROBOT IS FREE
+                                        if (ref1.buffer == 'free') {
+
+
+                                        }
+                                        //IF THE BUFFER OF THE CURRENT ROBOT IS NOT FREE
+                                        else {
+
+                                        }
+                                    }
+                                }
+                            }
+                            //IF CURRENT ROBOT IS NOT CAPABLE OF SERVING
+                            else {
+
+                            }
+
+
+                    //                 //IF ZONE 1 OF ROBOT 8 OCCURS AND THERE IS NO PALLET PRESENT IN ZONE 2 OF ROBOT 7
+                    //
+                    //
+                    //                 if(ws7.buffer == 'free') {
+                    //                     connection.query("SELECT * FROM Pallets where Status = 'in_queue'", function (results, rows) {
+                    //
+                    //                         if (rows.length == 0) {
+                    //                             console.log('No Pallets Ordered to Produce');
+                    //                         }
+                    //                         else {
+                    //                             setTimeout(function () {
+                    //                                 var options = {
+                    //                                     method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+robnumber+"/services/ChangePenBLUE
+                    //                                     body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                    //                                     json: true,
+                    //                                     url: "	http://localhost:3000/RTU/SimROB7/services/LoadPallet",
+                    //                                     headers: {
+                    //                                         'Content-Type': 'application/json'
+                    //                                     }
+                    //                                 };
+                    //                                 //Print the result of the HTTP POST request
+                    //                                 request(options, function (err) {
+                    //                                     if (err) {
+                    //                                         console.log('Error Loading Pallet');
+                    //                                     }
+                    //                                 });
+                    //                                 connection.query("UPDATE Pallets SET Status = 'processed' WHERE ProductID = ?", rows[0].ProductID, function () {
+                    //                                     console.log("Rows 'processed' Successfully");
+                    //                                 });
+                    //                             }, 2000);
+                    //
+                    //                         }
+                    //
+                    //                     });
+                    //                 }
+                    //
+                    break;
+                }
             //
             //             case "SimCNV9":
             //                 //CHECKING IF THE CURRENT ROBOT IS CAPABLE OF SERVING
@@ -441,14 +461,14 @@ robot.prototype.runServer = function (port) {
             //                 break;
             //
             //         }
-            //     }
+                }
             //     if ((req.body.payload.PalletID == -1)) {
             //         ref1.zone1 = false;
             //
             //     }
             //
             //     res.end();
-            //     break;
+                break;
             //
             // case "Z2_Changed":
             //
@@ -719,7 +739,7 @@ robot.prototype.runServer = function (port) {
 
                 request(options, function (error, response, body) {
                     if (!error) {
-                        console.log('Pallet Loaded information sent to Order Agent . ') // Print the shortened url.
+                        console.log('Pallet Loaded information sent to Order Agent . '); // Print the shortened url.
                     }
                     else {
                         console.log(error);
@@ -756,10 +776,10 @@ robot.prototype.runServer = function (port) {
             //
             //     res.end();
             //     break;
-        }
+        // }
 
-        //   break;
-        //  }
+
+         }
 
         //IF NEW PALLET IS INTRODUCED IN ALL ROBOTS
 

@@ -11,7 +11,7 @@ var pallcounter_=0;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-var orderAgent= function pallAgent() {
+var orderAgent= function orderAgent() {
     this.orderID = [];
     this.productID = [];
     this.frameType =[];
@@ -132,7 +132,7 @@ orderAgent.prototype.runServer = function (port) {
                 ref.frameColour.push(results[i].Framecolour);
                 ref.screenType.push(results[i].Screentype);
                 ref.screenColour.push( results[i].Screencolour);
-                ref.keyboardType.push(results[i].Keyboardtype);
+                ref.keyboardType.push(results[i].Keyboardtype); 
                 ref.keyboardColour.push(results[i].Keyboardcolour);
                 ref.orderStatus.push('processing');
 

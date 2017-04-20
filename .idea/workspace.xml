@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0b6d499e-eed0-474a-994f-6f22ecb76421" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Conveyor.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Order.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Pallet.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Robot.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Order.js" afterPath="$PROJECT_DIR$/Order.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pallet.js" afterPath="$PROJECT_DIR$/Pallet.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Robot.js" afterPath="$PROJECT_DIR$/Robot.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/run.js" afterPath="$PROJECT_DIR$/run.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -44,18 +39,18 @@
       <file leaf-file-name="Robot.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Robot.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7129">
-              <caret line="765" column="7" lean-forward="true" selection-start-line="765" selection-start-column="7" selection-end-line="765" selection-end-column="7" />
+            <state relative-caret-position="269">
+              <caret line="242" column="43" lean-forward="true" selection-start-line="242" selection-start-column="43" selection-end-line="242" selection-end-column="43" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Pallet.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Pallet.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Pallet.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-572">
-              <caret line="80" column="0" lean-forward="true" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+            <state relative-caret-position="179">
+              <caret line="20" column="23" lean-forward="false" selection-start-line="20" selection-start-column="23" selection-end-line="20" selection-end-column="23" />
               <folding>
                 <element signature="e#0#46#0" expanded="false" />
               </folding>
@@ -66,7 +61,7 @@
       <file leaf-file-name="Conveyor.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Conveyor.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
+            <state relative-caret-position="401">
               <caret line="32" column="62" lean-forward="false" selection-start-line="32" selection-start-column="62" selection-end-line="32" selection-end-column="62" />
               <folding>
                 <element signature="e#47#93#0" expanded="false" />
@@ -75,11 +70,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Order.js" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Order.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Order.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="894">
-              <caret line="172" column="0" lean-forward="true" selection-start-line="172" selection-start-column="0" selection-end-line="172" selection-end-column="0" />
+            <state relative-caret-position="546">
+              <caret line="134" column="64" lean-forward="false" selection-start-line="134" selection-start-column="64" selection-end-line="134" selection-end-column="64" />
               <folding />
             </state>
           </provider>
@@ -96,9 +91,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>buffer</find>
-      <find>transz</find>
-      <find>ref1.transzone(4, 5);</find>
       <find>transzone</find>
       <find>flag</find>
       <find>FLAG</find>
@@ -126,6 +118,9 @@
       <find>updated</find>
       <find>700</find>
       <find>7000</find>
+      <find>currentneed</find>
+      <find>current</find>
+      <find>new</find>
     </findStrings>
     <replaceStrings>
       <replace>ws</replace>
@@ -173,10 +168,10 @@
         <option value="$PROJECT_DIR$/Ws.js" />
         <option value="$PROJECT_DIR$/trial1.js" />
         <option value="$PROJECT_DIR$/app.js" />
-        <option value="$PROJECT_DIR$/Robot.js" />
-        <option value="$PROJECT_DIR$/Order.js" />
         <option value="$PROJECT_DIR$/Conveyor.js" />
+        <option value="$PROJECT_DIR$/Robot.js" />
         <option value="$PROJECT_DIR$/Pallet.js" />
+        <option value="$PROJECT_DIR$/Order.js" />
       </list>
     </option>
   </component>
@@ -419,7 +414,7 @@
       <workItem from="1492642921257" duration="154000" />
       <workItem from="1492643086321" duration="5496000" />
       <workItem from="1492683471590" duration="14726000" />
-      <workItem from="1492699077941" duration="2555000" />
+      <workItem from="1492699077941" duration="6854000" />
     </task>
     <task id="LOCAL-00001" summary="Initital Empty Project">
       <created>1491579143894</created>
@@ -439,7 +434,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="382737000" />
+    <option name="totallyTimeSpent" value="387036000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1050" extended-state="7" />
@@ -1133,9 +1128,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Robot.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="269">
+          <caret line="242" column="43" lean-forward="true" selection-start-line="242" selection-start-column="43" selection-end-line="242" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Conveyor.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
+        <state relative-caret-position="401">
           <caret line="32" column="62" lean-forward="false" selection-start-line="32" selection-start-column="62" selection-end-line="32" selection-end-column="62" />
           <folding>
             <element signature="e#47#93#0" expanded="false" />
@@ -1143,29 +1146,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Order.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="894">
-          <caret line="172" column="0" lean-forward="true" selection-start-line="172" selection-start-column="0" selection-end-line="172" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Robot.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7129">
-          <caret line="765" column="7" lean-forward="true" selection-start-line="765" selection-start-column="7" selection-end-line="765" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Pallet.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-572">
-          <caret line="80" column="0" lean-forward="true" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+        <state relative-caret-position="179">
+          <caret line="20" column="23" lean-forward="false" selection-start-line="20" selection-start-column="23" selection-end-line="20" selection-end-column="23" />
           <folding>
             <element signature="e#0#46#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Order.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="546">
+          <caret line="134" column="64" lean-forward="false" selection-start-line="134" selection-start-column="64" selection-end-line="134" selection-end-column="64" />
+          <folding />
         </state>
       </provider>
     </entry>

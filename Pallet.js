@@ -19,19 +19,21 @@ var pallAgent= function (frameType,  frameColour, screenType,screenColour,keyboa
     this.keyboard = false;
     this.screen = false;
     this.paper = false;
-    this.frameType = frameType;
-    this.frameColour = frameColour;
-    this.screenType = screenType;
-    this.screenColour = screenColour;
-    this.keyboardType = keyboardType;
-    this.keyboardColour = keyboardColour;
     this.palletID = palletID;
     this.currentws = 7;
     this.port = port;
     this.palletnumber = palletnumber;
     this.hostname = "127.0.0.1";
+    this.currentneed  = 'paper'
 
 };
+
+pallAgent.prototype.currentneed = function (ws,zone1,zone2) {
+
+
+
+};
+
 pallAgent.prototype.requestconv = function (ws,zone1,zone2) {
 var options;
     if((ws>0)&&(ws<10)) {
@@ -101,11 +103,14 @@ pallAgent.prototype.runServer = function (port) {
 
         switch (req.body.id) {
 
-            case "":
+            case "currentneed":
+
+                for(var i = 0; i<pallet.length; i++){
+
+                }
 
 
 
-                break;
 
 
         }
@@ -141,6 +146,7 @@ var pallnum = pallcounter+1;
 
 
             break;
+
 
 
     }
