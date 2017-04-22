@@ -8,20 +8,15 @@ var mysql = require('mysql');
 var request = require('request');
 var pallcounter_=0;
 
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+var counter = 0;
+var iterator = 0;
+
 var orderAgent= function orderAgent() {
-    this.orderID = [];
-    this.productID = [];
-    this.frameType =[];
-    this.frameColour = [];
-    this.screenType = [];
-    this.screenColour = [];
-    this.keyboardType = [];
-    this.keyboardColour =[];
-    this.orderStatus = [];
-    this.url = "127.0.0.1";
+   this.orderelement =[];
 };
 
 //DATABASE PARAMETERS
@@ -41,6 +36,17 @@ connection.connect(function (err) {
 
 });
 
+orderAgent.prototype.setport = function (port1,pallid) {
+    var ref1 = this;
+    for (var i=0;i<ref1.orderelement.length; i++) {
+        if (ref1.orderelement[i].palletID == pallid) {
+            console.log('Matching Pallet Id found and port set');
+            ref1.orderelement[i].port = port1;
+
+        }
+    }
+};
+
 
 orderAgent.prototype.runServer = function (port) {
     this.port = port;
@@ -53,22 +59,11 @@ orderAgent.prototype.runServer = function (port) {
         res.setHeader('Content-Type', 'text/plain');
         res.write('\nI am the Order Agent');
         res.write('\n');
-        res.write(ref.orderID.toString());
+        res.write(ref.orderelement.toString());
         res.write('\n');
-        res.write(ref.productID.toString());
-        res.write('\n');
-        res.write(ref.frameType.toString());
-        res.write('\n');
-        res.write(ref.frameColour.toString());
-        res.write('\n');
-        res.write(ref.screenType.toString());
-        res.write('\n');
-        res.write(ref.screenColour.toString());
-        res.write('\n');
-        res.write(ref.keyboardType.toString());
-        res.write('\n');
-        res.write(ref.orderStatus.toString());
+
         res.end('\nI am alive and running on port' , port);
+        console.log(ref.orderelement);
 
     });
 
@@ -110,7 +105,7 @@ orderAgent.prototype.runServer = function (port) {
             setTimeout(function(){
                 request.post('http://localhost:9000/updateOrderAgent');
 
-            },2000);
+            },1000);
         });
 
     });
@@ -126,16 +121,9 @@ orderAgent.prototype.runServer = function (port) {
             console.log(results);
             for (var i=0; i<results.length; i ++)
             {
-                ref.orderID.push(results[i].OrderID);
-                ref.productID.push(results[i].ProductID);
-                ref.frameType.push(results[i].Frametype);
-                ref.frameColour.push(results[i].Framecolour);
-                ref.screenType.push(results[i].Screentype);
-                ref.screenColour.push( results[i].Screencolour);
-                ref.keyboardType.push(results[i].Keyboardtype); 
-                ref.keyboardColour.push(results[i].Keyboardcolour);
-                ref.orderStatus.push('processing');
-
+                ref.orderelement.push({orderID: results[i].OrderID,productID:results[i].ProductID,palletID: 0, frameType: results[i].Frametype,frameColour: results[i].Framecolour,
+                    screenType: results[i].Screentype, screenColour: results[i].Screencolour, keyboardType: results[i].Keyboardtype, keyboardColour: results[i].Keyboardcolour,
+                    orderStatus: 'processing',port: 1234});
             }
 
 
@@ -153,32 +141,60 @@ orderAgent.prototype.runServer = function (port) {
              res.writeHead(200);
              res.end();
 
+             var palletID = req.body.payload.PalletID;
+             ref.orderelement[counter].palletID = palletID;
              var options = {
                  uri: 'http://localhost:8000/notifs',
                  method: 'POST',
                  json: true,
-                 body: {"id":"PalletInformation",
-                        "payload":{ "frameType":ref.frameType[pallcounter_],
-                                    "frameColour": ref.frameColour[pallcounter_],
-                                    "screenType":ref.frameColour[pallcounter_],
-                                    "screenColour":ref.frameColour[pallcounter_],
-                                    "keyboardType":ref.keyboardType[pallcounter_],
-                                    "keyboardColour":ref.keyboardColour[pallcounter_],
-                                    "palletID": req.body.payload.PalletID[pallcounter_]
-                                    }
-                        }
+                 body: {
+                         "id": "createpallet",
+                         "payload": {   "frameType":ref.orderelement[pallcounter_].frameType,
+                             "frameColour": ref.orderelement[pallcounter_].frameColour,
+                             "screenType":ref.orderelement[pallcounter_].screenType,
+                             "screenColour":ref.orderelement[pallcounter_].screenColour,
+                             "keyboardType":ref.orderelement[pallcounter_].keyboardType,
+                             "keyboardColour":ref.orderelement[pallcounter_].keyboardColour,
+                             "palletID": req.body.payload.PalletID
+                     }
+                 }
              };
 
              request(options, function (error, response, body) {
 
+
                  if (!error) {
-                     console.log('Pallet Details sent to Pallet Agent'); // Print the shortened url.
+                     console.log('Pallet Details sent to Pallet Agent');
+                     console.log(response.body);
+                     var pallport = response.body.pallport;
+                     var pallid = response.body.palletID;
+                     ref.setport(pallport,palletID);
+                     pallcounter_++
                  }
                  else {
                      console.log(error);
                  }
-
              });
+
+             break;
+
+         case "getport":
+
+            console.log('Port Identification requested');
+            var flag;
+             var palletID1= req.body.payload.palletID;
+             for (var i=0;i<ref.orderelement.length; i++){
+                 if (ref.orderelement[i].palletID == palletID1){
+                     console.log('Match for port found.!!');
+                     res.writeHead(200, {'Content-Type': 'application/json'});
+                     res.write(JSON.stringify({ pallport: ref.orderelement[i].port}));
+                     flag=1;
+                     res.end();
+                 }
+             }
+             if(flag==0){
+                 console.log('Match not found');
+             }
 
              break;
 
