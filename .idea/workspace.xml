@@ -2,12 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0b6d499e-eed0-474a-994f-6f22ecb76421" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Conveyor.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Robot.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/run.js" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Order.js" afterPath="$PROJECT_DIR$/Order.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Pallet.js" afterPath="$PROJECT_DIR$/Pallet.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Workstation.js" afterPath="$PROJECT_DIR$/Workstation.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -42,8 +36,8 @@
       <file leaf-file-name="Workstation.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Workstation.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="243">
-              <caret line="1178" column="41" lean-forward="true" selection-start-line="1178" selection-start-column="41" selection-end-line="1178" selection-end-column="41" />
+            <state relative-caret-position="619">
+              <caret line="1253" column="38" lean-forward="false" selection-start-line="1253" selection-start-column="38" selection-end-line="1253" selection-end-column="38" />
               <folding>
                 <element signature="e#0#46#0" expanded="false" />
               </folding>
@@ -112,8 +106,8 @@
       <find>1000</find>
       <find>transzone</find>
       <find>transzonereq</find>
-      <find>paperload</find>
       <find>flag</find>
+      <find>paperload</find>
     </findStrings>
     <replaceStrings>
       <replace>ref1</replace>
@@ -428,7 +422,7 @@
       <workItem from="1493196424998" duration="2303000" />
       <workItem from="1493198811031" duration="6000" />
       <workItem from="1493209820477" duration="9679000" />
-      <workItem from="1493222992249" duration="1804000" />
+      <workItem from="1493222992249" duration="5286000" />
     </task>
     <task id="LOCAL-00001" summary="Initital Empty Project">
       <created>1491579143894</created>
@@ -448,7 +442,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="490476000" />
+    <option name="totallyTimeSpent" value="493958000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1050" extended-state="7" />
@@ -752,8 +746,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Workstation.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="243">
-          <caret line="1178" column="41" lean-forward="true" selection-start-line="1178" selection-start-column="41" selection-end-line="1178" selection-end-column="41" />
+        <state relative-caret-position="619">
+          <caret line="1253" column="38" lean-forward="false" selection-start-line="1253" selection-start-column="38" selection-end-line="1253" selection-end-column="38" />
           <folding>
             <element signature="e#0#46#0" expanded="false" />
           </folding>

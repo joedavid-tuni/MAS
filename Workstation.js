@@ -942,9 +942,11 @@ workstation.prototype.runServer = function (port) {
             //
                         case "SimCNV1":
                         case "SimCNV7":
-                            if(ref1.status == 'free') {
-                                ref1.requestconv(2,3)
-                            }
+
+                                if(ref1.status != 'busy') {
+                                    ref1.requestconv(2, 3)
+                                }
+
                             break;
 
                         case "SimCNV2":
@@ -999,6 +1001,79 @@ workstation.prototype.runServer = function (port) {
                      switch (req.body.senderID) {
 
                         case"SimCNV7":
+
+                            options = {
+                                uri: 'http://localhost:9000/notifs',
+                                method: 'POST',
+                                json: true,
+                                body: {
+                                    "id": "getport",
+                                    "payload": {
+                                        "palletID": palletID3
+                                    }
+                                }
+                            };
+                            request(options, function (error, response, body) {
+                                if (!error) {
+                                    console.log('Port Number obtained as',response.body.pallport);
+                                    console.log('Initiating Communication . .');
+                                    var port1 = response.body.pallport;
+                                    var sub = port1%10;
+
+                                    var options1= {
+                                        uri: 'http://localhost:'+port1+'/notifs/'+sub,
+                                        method: 'POST',
+                                        json: true,
+                                        body: {
+                                            "id": "getstatus"
+                                        }
+                                    }
+                                }
+                                else {
+                                    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Error getting port (12)');
+                                }
+                                request(options1, function (error, response, body) {
+                                    if (!error) {
+                                        console.log('requested status and obtained as', response.body);
+                                        if(response.body.currentneed == 'complete'){
+                                            var options = {
+                                                method: 'POST', //  http://127.0.0.1:3000/RTU/SimROB"+wsnumber+"/services/ChangePenBLUE
+                                                body: {"destUrl": "http://127.0.0.1"}, // Javascript object
+                                                json: true,
+                                                url: "http://localhost:3000/RTU/SimROB7/services/UnloadPallet",
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                }
+                                            };
+                                            //Print the result of the HTTP POST request
+                                            request(options, function (err) {
+                                                if (err) {
+                                                    console.log('Error Unloading Pallet');
+
+                                                    // if(ref1.zone2 == true){
+                                                    //     ref1.requestconv(2,3)
+                                                    // }
+                                                }
+                                                else{
+                                                    ref1.status = 'free';
+                                                }
+
+                                            });
+                                        }
+
+                                        else {
+
+                                            ref1.requestconv(3,5)
+                                        }
+                                    }
+
+                                    else{
+                                        console.log(error);
+                                    }
+                                });
+
+
+                            });
 
                                 break;
                         case "SimCNV1":
@@ -1115,7 +1190,7 @@ workstation.prototype.runServer = function (port) {
                     if (ref1.buffer == 'occupied') {
                         setTimeout(function(){
                             ref1.requestconv(2,3)
-                        },1500)
+                        },2500)
                     }
                 }
                 // res.writeHead(202);
@@ -1139,12 +1214,12 @@ workstation.prototype.runServer = function (port) {
 
                 ref1.zone4 = false;
 
-                if(ref1.zone1 == true){
 
-
-
+                    if(ref1.zone1 == true){
+                        setTimeout(function () {
+                            ref1.requestconv(1,4);
+                        }, 1500);
                     }
-
                 }
             //
             //
@@ -1174,9 +1249,10 @@ workstation.prototype.runServer = function (port) {
                             ref1.flag = false;
 
                             if(ref1.zone4 == true) {
-                                setTimeout(function () {
-                                    ref1.requestconv(4,5);
-                                }, 1500);
+                                setTimeout(function(){
+                                    ref1.requestconv(4,5)
+                                },1000)
+
                             }
                     }
                 }
@@ -1316,9 +1392,9 @@ workstation.prototype.runServer = function (port) {
             //
             //     break;
             case "PaperLoaded":
-                setTimeout(function(){
+                // setTimeout(function(){
                     ref1.requestconv(3, 5);
-                },2000);
+                // },2200);
                 break;
             // case "PaperUnloaded":
             //     request.get("http://localhost:3000/RTU/SimCNV2/data/P1", function (req, res) {
