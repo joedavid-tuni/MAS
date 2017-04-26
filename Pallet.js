@@ -72,11 +72,13 @@ var options;
             }
         };
     }
+    setTimeout(function(){
     request(options, function (error, response, body) {
         if (!error) {
             console.log('Requested Workstation to Transfer Zones');
         }
     });
+    },1000);
 
 };
 pallAgent.prototype.runServer = function (port) {

@@ -68,16 +68,17 @@ orderAgent.prototype.runServer = function (port) {
     });
 
     app.get('/submit', function(req,res){
+        res.writeHead(200);
+        res.end();
         var rows_;
-        var counter = 0;
+
 
         connection.query("SELECT * FROM Products INNER JOIN Orders ON Products.ProductID = Orders.ProductID WHERE Products.status = 'ordered'", function(results,rows){
 
             var length = rows.length;
             console.log('Rows:');
             console.log(rows);
-            counter= 0;
-            counter++;
+
 
             //CREATING PALLETS TABLE FROM ORDERS AND PRODUCTS TABLES WHICH INTURN IS FROM THE WEB INTERFACE
 
@@ -109,7 +110,9 @@ orderAgent.prototype.runServer = function (port) {
         });
 
     });
-    app.post('/updateOrderAgent', function(res){
+    app.post('/updateOrderAgent', function(req,res){
+        res.writeHead(200);
+        res.end();
         console.log('Updated Order Agent');
 
         connection.query("SELECT * FROM Pallets where Status = 'in_queue'", function(error,results,rows) {
@@ -143,6 +146,7 @@ orderAgent.prototype.runServer = function (port) {
 
              var palletID = req.body.payload.PalletID;
              ref.orderelement[counter].palletID = palletID;
+
              var options = {
                  uri: 'http://localhost:8000/notifs',
                  method: 'POST',
@@ -169,7 +173,8 @@ orderAgent.prototype.runServer = function (port) {
                      var pallport = response.body.pallport;
                      var pallid = response.body.palletID;
                      ref.setport(pallport,palletID);
-                     pallcounter_++
+                     pallcounter_++;
+                     ++counter;
                  }
                  else {
                      console.log(error);

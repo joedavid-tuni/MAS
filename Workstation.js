@@ -119,7 +119,7 @@ workstation.prototype.work= function (obj) {
             }
             else
             {
-                ref.transzone(3,5);
+                ref.requestconv(3,5);
             }
             break;
 
@@ -177,7 +177,9 @@ workstation.prototype.work= function (obj) {
                 }
                 else{
                     //HANDLE FLAGG
-                    ref.requestconv(3, 5);
+                    setTimeout(function(){
+                        ref.requestconv(3, 5);
+                    },1000);
                     ref.flag=true;
 
                 }
@@ -203,13 +205,17 @@ workstation.prototype.work= function (obj) {
                 }
                 else{
                     //HANDLE FLAG
+                    setTimeout(function(){
                         ref.requestconv(3, 5);
-                        ref.flag=true;
+                    },1000);
+                    ref.flag=true;
                 }
 
             }
             else if(obj.currentneed == 'complete'){
-                ref.requestconv(3, 5);
+                setTimeout(function(){
+                    ref.requestconv(3, 5);
+                },1000);
                 ref.flag=true;
             }
             break;
@@ -914,9 +920,12 @@ workstation.prototype.runServer = function (port) {
                                     break;
 
                         }
-                    if ((req.body.payload.PalletID == -1)) {
-                        ref1.zone1 = false;
-                    }
+
+
+                }
+
+                else if ((req.body.payload.PalletID == -1)) {
+                    ref1.zone1=false;
 
                 }
 
@@ -963,14 +972,14 @@ workstation.prototype.runServer = function (port) {
                     switch (req.body.senderID) {
                         case "SimCNV1":
                         case "SimCNV7":
-                            request.get("http://localhost:3000/RTU/SimCNV"+ref1.wsnumber+"/data/P1", function (req, res) {
-                                var obj1 = JSON.parse(res.body);
-                                var present = obj1.v;
-                                if(present){
+                            if(ref1.zone1==true){
+                                setTimeout(function(){
                                         ref1.requestconv(1,2)
-                                }
+                                },1000)
+                            }
 
-                            });
+
+
                             break;
                     }
 
@@ -1104,7 +1113,9 @@ workstation.prototype.runServer = function (port) {
                     ref1.status = 'free';
 
                     if (ref1.buffer == 'occupied') {
-                            ref1.requestconv(2,3);
+                        setTimeout(function(){
+                            ref1.requestconv(2,3)
+                        },1500)
                     }
                 }
                 // res.writeHead(202);
@@ -1117,63 +1128,66 @@ workstation.prototype.runServer = function (port) {
             //
             //
                 if ((req.body.payload.PalletID != -1)) {
+                    ref1.zone4 = true;
 
                     if((ref1.flag == false)&&(ref1.zone5 == false)){
                         ref1.requestconv(4,5)
                     }
                 }
             //
-            //     else if ((req.body.payload.PalletID == -1)){
-            //
-            //         if(ref1.zone1 == true){
-            //
-            //
-            //
-            //         }
-            //
-            //     }
+                else if ((req.body.payload.PalletID == -1)){
+
+                ref1.zone4 = false;
+
+                if(ref1.zone1 == true){
+
+
+
+                    }
+
+                }
             //
             //
                 res.end();
                 break;
-            //
-            // case "Z5_Changed":
-            //     if (req.body.payload.PalletID == -1) {
-            //         ref1.zone5 = false;
-            //
-            //         switch (req.body.senderID) {
-            //
-            //             case "SimCNV2":
-            //             case "SimCNV3":
-            //             case "SimCNV4":
-            //             case "SimCNV5":
-            //             case "SimCNV6":
-            //             case "SimCNV8":
-            //             case "SimCNV9":
-            //             case "SimCNV10":
-            //             case "SimCNV11":
-            //             case "SimCNV12":
-            //
-            //                 console.log(req.body);
-            //
-            //
-            //                 ref1.flag = false;
-            //
-            //
-            //                 setTimeout(function () {
-            //
-            //                 }, 1500);
-            //
-            //         }
-            //     }
-            //     else if (req.body.payload.PalletID != -1) {
-            //         ref1.zone5 = true;
-            //
-            //     }
-            //     res.end();
-            //
-            //     break;
-            //
+
+            case "Z5_Changed":
+                if (req.body.payload.PalletID == -1) {
+                    ref1.zone5 = false;
+
+                    switch (req.body.senderID) {
+
+                        case "SimCNV2":
+                        case "SimCNV3":
+                        case "SimCNV4":
+                        case "SimCNV5":
+                        case "SimCNV6":
+                        case "SimCNV8":
+                        case "SimCNV9":
+                        case "SimCNV10":
+                        case "SimCNV11":
+                        case "SimCNV12":
+
+                            console.log(req.body);
+
+
+                            ref1.flag = false;
+
+                            if(ref1.zone4 == true) {
+                                setTimeout(function () {
+                                    ref1.requestconv(4,5);
+                                }, 1500);
+                            }
+                    }
+                }
+                else if (req.body.payload.PalletID != -1) {
+                    ref1.zone5 = true;
+
+                }
+                res.end();
+
+                break;
+
             case "DrawEndExecution":
 
                 console.log('Completed Drawing Recipe' + req.body.payload.Recipe + 'of colour' + req.body.payload.Color);
@@ -1302,9 +1316,9 @@ workstation.prototype.runServer = function (port) {
             //
             //     break;
             case "PaperLoaded":
-
-                ref1.requestconv(3, 5);
-
+                setTimeout(function(){
+                    ref1.requestconv(3, 5);
+                },2000);
                 break;
             // case "PaperUnloaded":
             //     request.get("http://localhost:3000/RTU/SimCNV2/data/P1", function (req, res) {
