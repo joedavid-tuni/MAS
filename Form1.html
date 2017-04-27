@@ -2,19 +2,31 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title></title>
+<title>jQuery Add / Remove Table Rows Dynamically</title>
 
 <link rel="stylesheet" href="./css/style.css">
     <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
     <script type="text/javascript" src="./script/script.js"> </script>
 </head>
 <body>
+
+
     <br> <br>
+
+    <h1 align ="center" style="color: white">Make your Mobile Phone Order</h1>
+    <br> <br>
+
     <div align="center" >
         
-        <input type="text" id="name" name="name" placeholder="Enter your full name" />
-        <input type="text" id="Adresse" name="Adresse" placeholder="your Address Here" />
-        <input type="number" id="Phone" name="Phone" placeholder="Your Phone Number" />
+        <span style="color: white">Your Name   :   </span> <input type="text" id="name" name="name" placeholder="Enter your full name" required/>
+                
+                
+        <span style="color: white">Your Address  :  </span> <input type="text" id="Adresse" name="Adresse" placeholder="Your Adresse Here" required/>
+              
+                
+        <span style="color: white"> Your Phone  :   </span> <input type="tel" id="Phone" name="Phone"  placeholder="Your Phone Number" required/>
+               
+
 
 
  
@@ -24,7 +36,7 @@
         <select name="Frame-Type" id="Frame-Type">
             <option value="Frame_1">frame1</option>
             <option value="Frame_2">frame2</option>
-            <option value="Frame_3">frame3</option>
+            <option value="Frame_3  ">frame3</option>
         </select>
 
         <select name="Frame-Colour" id="Frame-Colour">
@@ -63,6 +75,7 @@
         
         <button class="send-server" > Send </button>
 
+    <br> <br>
 
 
 

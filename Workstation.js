@@ -312,20 +312,26 @@ workstation.prototype.runServer = function (port) {
                                                         }
                                                         else{
                                                             if (((ws5.status == 'free') || (ws9.status == 'free') || (ws12.status == 'free'))) {
-                                                                ref1.requestconv(1, 4)
+                                                                if(ref1.zone4 == false){
+                                                                    ref1.requestconv(1, 4)
+                                                                }
                                                             }
                                                             else{
                                                                 if(ref1.buffer == 'free'){
                                                                         ref1.requestconv(1, 2);
                                                                 }
                                                                 else{
-                                                                    ref1.requestconv(1, 4);
+                                                                    if(ref1.zone4 == false){
+                                                                        ref1.requestconv(1, 4)
+                                                                    }
                                                                 }
                                                             }
                                                         }
                                                     }
                                                     else{
-                                                        ref1.requestconv(1,4)
+                                                        if(ref1.zone4 == false){
+                                                            ref1.requestconv(1, 4)
+                                                        }
                                                     }
                                                 }
 
@@ -378,20 +384,26 @@ workstation.prototype.runServer = function (port) {
                                                         }
                                                         else{
                                                             if((ws6.status == 'free')||(ws10.status == 'free')){
-                                                                ref1.requestconv(1, 4)
+                                                                if(ref1.zone4 == false){
+                                                                    ref1.requestconv(1, 4)
+                                                                }
                                                             }
                                                             else{
                                                                 if(ref1.buffer == 'free'){
                                                                     ref1.requestconv(1, 2);
                                                                 }
                                                                 else{
-                                                                    ref1.requestconv(1, 4);
+                                                                    if(ref1.zone4 == false){
+                                                                        ref1.requestconv(1, 4)
+                                                                    }
                                                                 }
                                                             }
                                                         }
                                                     }
                                                     else{
-                                                        ref1.requestconv(1,4)
+                                                        if(ref1.zone4 == false){
+                                                            ref1.requestconv(1, 4)
+                                                        }
                                                     }
                                                 }
                                                 else{
@@ -441,20 +453,26 @@ workstation.prototype.runServer = function (port) {
                                                         }
                                                         else{
                                                             if((ws8.status == 'free')||(ws11.status == 'free')){
-                                                                ref1.requestconv(1, 4)
+                                                                if(ref1.zone4 == false){
+                                                                    ref1.requestconv(1, 4)
+                                                                }
                                                             }
                                                             else{
                                                                 if(ref1.buffer == 'free'){
                                                                     ref1.requestconv(1, 2);
                                                                 }
                                                                 else{
-                                                                    ref1.requestconv(1, 4);
+                                                                    if(ref1.zone4 == false){
+                                                                        ref1.requestconv(1, 4)
+                                                                    }
                                                                 }
                                                             }
                                                         }
                                                     }
                                                     else{
-                                                        ref1.requestconv(1,4)
+                                                        if(ref1.zone4 == false){
+                                                            ref1.requestconv(1, 4)
+                                                        }
                                                     }
                                                 }
 
@@ -506,20 +524,26 @@ workstation.prototype.runServer = function (port) {
                                                         }
                                                         else{
                                                             if((ws9.status == 'free')||(ws12.status == 'free')){
-                                                                ref1.requestconv(1, 4)
+                                                                if(ref1.zone4 == false){
+                                                                    ref1.requestconv(1, 4)
+                                                                }
                                                             }
                                                             else{
                                                                 if(ref1.buffer == 'free'){
                                                                     ref1.requestconv(1, 2);
                                                                 }
                                                                 else{
-                                                                    ref1.requestconv(1, 4);
+                                                                    if(ref1.zone4 == false){
+                                                                        ref1.requestconv(1, 4)
+                                                                    }
                                                                 }
                                                             }
                                                         }
                                                     }
                                                     else{
-                                                        ref1.requestconv(1,4)
+                                                        if(ref1.zone4 == false){
+                                                            ref1.requestconv(1, 4)
+                                                        }
                                                     }
                                                 }
 
@@ -576,7 +600,9 @@ workstation.prototype.runServer = function (port) {
                                                         else{
                                                             if((ws10.status == 'free')){
                                                                 console.log('Debug WS6 area3');
-                                                                ref1.requestconv(1, 4)
+                                                                if(ref1.zone4 == false){
+                                                                    ref1.requestconv(1, 4)
+                                                                }
                                                             }
                                                             else{
                                                                 if(ref1.buffer == 'free'){
@@ -585,14 +611,18 @@ workstation.prototype.runServer = function (port) {
                                                                 }
                                                                 else{
                                                                     console.log('Debug WS6 area5');
-                                                                    ref1.requestconv(1, 4);
+                                                                    if(ref1.zone4 == false){
+                                                                        ref1.requestconv(1, 4)
+                                                                    }
                                                                 }
                                                             }
                                                         }
                                                     }
                                                     else{
                                                         console.log('Debug WS6 area6');
-                                                        ref1.requestconv(1,4)
+                                                        if(ref1.zone4 == false){
+                                                            ref1.requestconv(1, 4)
+                                                        }
                                                     }
                                                 }
 
@@ -606,7 +636,9 @@ workstation.prototype.runServer = function (port) {
                                         });
                                         break;
                                     case "SimCNV7":
-                                        ref1.requestconv(1, 2);
+                                        if(ref1.buffer =='free') {
+                                            ref1.requestconv(1, 2);
+                                        }
                                         break;
 
                         case "SimCNV8":
@@ -649,20 +681,26 @@ workstation.prototype.runServer = function (port) {
                                             }
                                             else{
                                                 if(ws11.status == 'free'){
-                                                    ref1.requestconv(1, 4)
+                                                    if(ref1.zone4 == false){
+                                                        ref1.requestconv(1, 4)
+                                                    }
                                                 }
                                                 else{
                                                     if(ref1.buffer == 'free'){
                                                         ref1.requestconv(1, 2);
                                                     }
                                                     else{
-                                                        ref1.requestconv(1, 4);
+                                                        if(ref1.zone4 == false){
+                                                            ref1.requestconv(1, 4)
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
                                         else{
-                                            ref1.requestconv(1,4)
+                                            if(ref1.zone4 == false){
+                                                ref1.requestconv(1, 4)
+                                            }
                                         }
                                     }
 
@@ -716,20 +754,26 @@ workstation.prototype.runServer = function (port) {
                                                     }
                                                     else{
                                                         if ((ws12.status == 'free')) {
-                                                            ref1.requestconv(1, 4)
+                                                            if(ref1.zone4 == false){
+                                                                ref1.requestconv(1, 4)
+                                                            }
                                                         }
                                                         else{
                                                             if(ref1.buffer == 'free'){
                                                                 ref1.requestconv(1, 2);
                                                             }
                                                             else{
-                                                                ref1.requestconv(1, 4);
+                                                                if(ref1.zone4 == false){
+                                                                    ref1.requestconv(1, 4)
+                                                                }
                                                             }
                                                         }
                                                     }
                                                 }
                                                 else{
-                                                    ref1.requestconv(1,4)
+                                                    if(ref1.zone4 == false){
+                                                        ref1.requestconv(1, 4)
+                                                    }
                                                 }
                                             }
 
@@ -784,12 +828,16 @@ workstation.prototype.runServer = function (port) {
                                                                 ref1.requestconv(1, 2);
                                                         }
                                                         else{
-                                                              ref1.requestconv(1, 4);
+                                                            if(ref1.zone4 == false){
+                                                                ref1.requestconv(1, 4)
+                                                            }
                                                         }
                                                     }
                                                 }
                                                 else{
-                                                    ref1.requestconv(1,4)
+                                                    if(ref1.zone4 == false){
+                                                        ref1.requestconv(1, 4)
+                                                    }
                                                 }
                                             }
                                             else{
@@ -843,12 +891,16 @@ workstation.prototype.runServer = function (port) {
                                                             ref1.requestconv(1, 2);
                                                         }
                                                         else{
-                                                            ref1.requestconv(1, 4);
+                                                            if(ref1.zone4 == false){
+                                                                ref1.requestconv(1, 4)
+                                                            }
                                                         }
                                                     }
                                                 }
                                                 else{
-                                                    ref1.requestconv(1,4)
+                                                    if(ref1.zone4 == false){
+                                                        ref1.requestconv(1, 4)
+                                                    }
                                                 }
                                             }
                                             else{
@@ -902,12 +954,16 @@ workstation.prototype.runServer = function (port) {
                                                             ref1.requestconv(1, 2);
                                                         }
                                                         else{
-                                                            ref1.requestconv(1, 4);
+                                                            if(ref1.zone4 == false){
+                                                                ref1.requestconv(1, 4)
+                                                            }
                                                         }
                                                     }
                                                 }
                                                 else{
-                                                    ref1.requestconv(1,4)
+                                                    if(ref1.zone4 == false){
+                                                        ref1.requestconv(1, 4)
+                                                    }
                                                 }
                                             }
                                             else{

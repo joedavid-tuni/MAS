@@ -2,6 +2,21 @@ var array = [];
 
 
 $(document).ready(function(){
+
+        $('#Phone').keyup( function () { 
+            this.value = this.value.replace(/[^0-9\.]/g,'');
+        });
+
+        $('input').keyup( function () { 
+            if(this.value) {
+                    $(this).removeClass('required');
+                    $(this).removeClass('tooltip');
+             }
+        });
+       
+
+
+
         $(".add-row").click(function(){
             var data = {
                         
@@ -29,8 +44,9 @@ $(document).ready(function(){
             "</td></tr>";
             
              
-             
-             array.push(data);
+             if(data.name && data.adresse && data.phone) {
+                array.push(data);
+             }
 
              
 
@@ -39,10 +55,25 @@ $(document).ready(function(){
                     $("#name").val("");
                     $("#Adresse").val("");
                     $("#Phone").val("");
+                    $("#name").attr("placeholder", "Enter your full name");      
+                    $("#Adresse").attr("placeholder", "your Adresse Here");           
+                    $("#Phone").attr("placeholder", "Your Phone Number"); 
              }
-             else { alert("Please Fill All required inputs") }
-
-            
+             else{
+             
+                     if ($("#name").val()==="") { $("#name").addClass('required'); 
+                                                    $("#name").attr("placeholder", "Required field");    
+                                                    $("#name").addClass('tooltip');                
+                                                 }
+                     if ($("#Adresse").val()==="") { $("#Adresse").addClass('required');   
+                                                    $("#Adresse").attr("placeholder", "Required field");          
+                                                    $("#Adresse").addClass('tooltip');                                                 
+                                                 }
+                     if ($("#Phone").val()==="") { $("#Phone").addClass('required');  
+                                                    $("#Phone").attr("placeholder", "Required field");                
+                                                     $("#Phone").addClass('tooltip'); 
+                                                 }
+             }    
 
 
 
@@ -68,6 +99,7 @@ $(document).ready(function(){
         // Find and remove selected table rows
         $(".delete-row").click(function(){
             $("table tbody").find('input[name="record"]').each(function(i){
+                
             	if($(this).is(":checked")){
                     $(this).parents("tr").remove();
                     array[i].deleted = true;

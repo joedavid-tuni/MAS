@@ -110,6 +110,7 @@ orderAgent.prototype.runServer = function (port) {
         });
 
     });
+    //THIS IS ONLY A ONE TIME PIECE OF CODE THAT OCCURS WHEN THE ORDER IS PLACED. IT ISN'T LINKED TO THE WORKING OF THE SYSTEM. THIS IS TO  IMPLEMENT THE PERSISTENCE LAYER IN PARALLEL
     app.post('/updateOrderAgent', function(req,res){
         res.writeHead(200);
         res.end();
