@@ -7,8 +7,9 @@ The goal of the task is to design, program and establish a production line syste
 * the local agents must cooperate ina flexible manner. 
 
 ## Programming Environment
-Language: JavaScript / nodeJs
-IDE: Webstorm
+* Language: JavaScript / nodeJs
+* IDE: Webstorm
+* Software Design Tool: Visual Paradigm
 
 ## Physical Environment
 
